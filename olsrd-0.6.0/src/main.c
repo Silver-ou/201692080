@@ -125,14 +125,14 @@ struct olsr_cookie_info *def_timer_ci = NULL;
  * locking file.
  */
 static void olsr_create_lock_file(void) {
-#ifdef WIN32
+#ifdef WIN32       //win32系统创建锁的方式
   HANDLE lck = CreateEvent(NULL, TRUE, FALSE, lock_file_name);
-  if (NULL == lck || ERROR_ALREADY_EXISTS == GetLastError()) {
-    if (NULL == lck) {
+  if (NULL == lck || ERROR_ALREADY_EXISTS == GetLastError()) {   //创建的锁出错
+    if (NULL == lck) {   //创建锁为空
       fprintf(stderr,
           "Error, cannot create OLSR lock '%s'.\n",
           lock_file_name);
-    } else {
+    } else {            //有其他的锁文件在运行
       CloseHandle(lck);
       fprintf(stderr,
           "Error, cannot aquire OLSR lock '%s'.\n"
@@ -141,12 +141,12 @@ static void olsr_create_lock_file(void) {
     }
     olsr_exit("", EXIT_FAILURE);
   }
-#else
+#else  //其他的系统创建锁文件
   struct flock lck;
 
   /* create file for lock */
-  lock_fd = open(lock_file_name, O_WRONLY | O_CREAT, S_IRWXU);
-  if (lock_fd == 0) {
+  lock_fd = open(lock_file_name, O_WRONLY | O_CREAT, S_IRWXU);   //创建锁的文件描述
+  if (lock_fd == 0) {      //无法创建olsr锁
     close(lock_fd);
     fprintf(stderr,
         "Error, cannot create OLSR lock '%s'.\n",
@@ -154,14 +154,14 @@ static void olsr_create_lock_file(void) {
     olsr_exit("", EXIT_FAILURE);
   }
 
-  /* create exclusive lock for the whole file */
+  /* create exclusive lock for the whole file */  //设置锁的各个属性
   lck.l_type = F_WRLCK;
   lck.l_whence = SEEK_SET;
   lck.l_start = 0;
   lck.l_len = 0;
   lck.l_pid = 0;
 
-  if (fcntl(lock_fd, F_SETLK, &lck) == -1) {
+  if (fcntl(lock_fd, F_SETLK, &lck) == -1) {   //无法获取锁
     close(lock_fd);
     fprintf(stderr,
         "Error, cannot aquire OLSR lock '%s'.\n"
@@ -178,16 +178,16 @@ static void olsr_create_lock_file(void) {
  * @return <0 if load failed, 0 otherwise
  */
 static int
-olsrmain_load_config(char *file) {
+olsrmain_load_config(char *file) {   //加载配置文件
   struct stat statbuf;
 
-  if (stat(file, &statbuf) < 0) {
+  if (stat(file, &statbuf) < 0) {   //获取file文件属性失败
     fprintf(stderr, "Could not find specified config file %s!\n%s\n\n",
         file, strerror(errno));
     return -1;
   }
 
-  if (olsrd_parse_cnf(file) < 0) {
+  if (olsrd_parse_cnf(file) < 0) {      //读取配置信息出错
     fprintf(stderr, "Error while reading config file %s!\n", file);
     return -1;
   }
