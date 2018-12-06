@@ -134,7 +134,7 @@ static void olsr_create_lock_file(void) {
           lock_file_name);
     } else {            //有其他的锁文件在运行
       CloseHandle(lck);
-      fprintf(stderr,
+      fprintf(stderr,//啦啦啦
           "Error, cannot aquire OLSR lock '%s'.\n"
           "Another OLSR instance might be running.\n",
           lock_file_name);
