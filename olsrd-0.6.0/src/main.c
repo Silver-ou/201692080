@@ -200,6 +200,8 @@ olsrmain_load_config(char *file) {   //加载配置文件
 
 int main(int argc, char *argv[]) {
   struct if_config_options *default_ifcnf;
+   //ifconfig 主要是可以手动启动、观察与修改网络接口的相关参数
+ 
   char conf_file_name[FILENAME_MAX];
   struct ipaddr_str buf;
   bool loadedConfig = false;
@@ -211,10 +213,13 @@ int main(int argc, char *argv[]) {
 
 #ifdef WIN32
   WSADATA WsaData;
-  size_t len;
+  //WSAData机构体如下功能是:存放windows socket初始化信息  如版本 
+  size_t len;//以理解成unsignted int size   一般用来指明一个数组长度
+
 #endif
 
   /* paranoia checks */
+  //声明某些类型的位数
   assert(sizeof(uint8_t) == 1);
   assert(sizeof(uint16_t) == 2);
   assert(sizeof(uint32_t) == 4);
@@ -236,30 +241,32 @@ int main(int argc, char *argv[]) {
   }
 
   debug_handle = stdout;
-#ifndef WIN32
+#ifndef WIN32  //参数数组
   olsr_argv = argv;
 #endif
-  setbuf(stdout, NULL);
+  setbuf(stdout, NULL);//putchar输入的字符  flush 之后都到了setbuf第二个参数的缓冲数组
   setbuf(stderr, NULL);
 
 #ifndef WIN32
   /* Check if user is root */
-  if (geteuid()) {
+  if (geteuid()) {//geteuid()用来取得执行目前进程有效的用户识别码  返回值为0才可以运行
     fprintf(stderr, "You must be root(uid = 0) to run olsrd!\nExiting\n\n");
     exit(EXIT_FAILURE);
   }
 #else
-  DisableIcmpRedirects();
+  DisableIcmpRedirects();//icmp无法重新使用
 
-  if (WSAStartup(0x0202, &WsaData)) {
+  if (WSAStartup(0x0202, &WsaData)) {//Socket的程序在使用Socket之前必须调用WSAStartup函数。
+  //以后应用程序就可以调用所请求的Socket库中的其它Socket函数了。与cleanup相对应
     fprintf(stderr, "Could not initialize WinSock.\n");
     olsr_exit(__func__, EXIT_FAILURE);
   }
 #endif
 
   /* Open syslog */
-  olsr_openlog("olsrd");
+  olsr_openlog("olsrd");//可能是打开系统日志
 
+  /* Grab initial timestamp */   //初始化时间戳
   /* Using PID as random seed */
   srandom(getpid());
 
