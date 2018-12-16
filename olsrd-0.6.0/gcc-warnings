@@ -2,7 +2,7 @@
 #
 # We expect warning options for gcc as arguments and return the ones which are
 # accepted by the given gcc.
-#
+#我们希望gcc的警告选项作为参数，并返回给定gcc接受的选项。
 
 set -ue
 #set -vx
@@ -42,6 +42,7 @@ parsetest() {
        esac
        # if we come here, we have in $opt the option to remove. and
        # we remove all instances. And we save agoinst leading "-"
+       #如果我们来到这里，我们在$ opt中有选择删除。 我们删除所有实例。 我们保存在前面的“ - ”
        NEW_OPTS=""
        for o in $OPTS; do
            case "$o" in
