@@ -47,11 +47,13 @@ II.  - BUILDING AND RUNNING OLSRD
 The olsr.org OLSR daemon is an implementation of the Optimized Link State
 routing protocol. The protocol is documented in RFC3626. The website
 of olsrd is http://www.olsr.org
+org OLSR守护进程是优化链接状态的实现路由协议。
 
 Olsrd is designed to be a modular an extensible implementation. It features
 a plugin interface, allowing for developers to extend OLSR operation without
 interfering with the core code. It also features a experimental link quality
 routing scheme.
+Olsrd被设计成模块化的可扩展实现。它具有一个插件接口，允许开发人员在不干扰核心代码的情况下扩展OLSR操作。它还具有一个实验性的链路质量路由方案。
 
 To ask questions or make comments, join up with the mailing lists:
 olsr-dev@olsr.org   - development discussion
@@ -83,10 +85,12 @@ Internally there are a few things that are solved differently that proposed
 in the RFC. Check out the "Conclusions" section of the "Implementing And
 Extending The Optimized Link State routing Protocol" thesis available at
 olsr.org.
+如果在不使用链路质量路由/ MPR选择的情况下运行olsrd，则它与RFC3626兼容，因为它将与其他RFC3626实现互操作。
+在内部，RFC中提出了一些不同的解决方案。查看olsr.org提供的“实现和扩展优化链路状态路由协议”论文的“结论”部分。
 
 
 ===========
- * PLUGINS
+ * PLUGINS   插件
 ===========
 
 Olsrd supports dynamic loading of plugins (dynamically loaded libraries) for 
@@ -94,14 +98,20 @@ functions like generation and processing of private package types, setting
 olsrd configurations in run-time and much more. This design is chosen for
 amongst others, the following reasons:
 
+Olsrd支持动态加载插件（动态加载的库），用于生成和处理私有包类型，在运行时设置olsrd配置等功能。 选择此设计的原因如下：
+
  * No need to change any code in the olsr daemon to add custom packages or 
    functionality.
+   不需要更改olsr守护程序中的任何代码来添加自定义包或功能。
  * Users are free to implement olsrd plugins and license them under whatever 
    terms they like.
+   用户可以自由地实现olsrd插件，并按照他们喜欢的任何条款授权它们。
  * The plugins can be written in any language that can be compiled as 
    a dynamic library. Linux even allows scripts!
+   插件可以用任何可以编译为动态库的语言编写。Linux甚至允许脚本！
  * No need for people with extended OLSR versions to rely on heavy patching 
    to maintain functionality when new olsrd versions are released.
+   在发布新的olsrd版本时，不需要具有扩展OLSR版本的人依赖大量修补来维护功能。
 
 OLSR provides a default forwarding algorithm that allows for forwarding of OLSR 
 messages of unknown types. This is really neat - because it means that even if 
@@ -111,27 +121,39 @@ pragma. A user may want to use the optimized flooding technique in OLSR to
 broadcast certain information, routing related or not, to all nodes that knows 
 how to handle this message. Services that needs to broadcast/multicast data can 
 encapsulate data in a private OLSR message type using a olsrd plugin. 
+OLSR提供默认转发算法，允许转发未知类型的OLSR消息。 
+这非常简洁 - 因为这意味着即使网络中只有一部分节点实际知道如何解释某种消息类型 - 所有节点都会根据MPR编译指示转发它们。 
+用户可能想要在OLSR中使用优化的泛洪技术来向所有知道如何处理该消息的节点广播某些信息，路由是否相关。 需要广播/组播数据的服务可以
+使用olsrd插件将数据封装在私有OLSR消息类型中。
 
 The design of the various entities of OLSR allows one to easily add special 
 functionality into most aspects of OLSR. One can both register functions and 
 unregister them with the socket parser, packet parser, scheduler and HNA set etc. 
 This opens up for possibilities like intercepting current operation and replacing 
 it with custom actions.
+OLSR的各种实体的设计允许人们在OLSR的大多数方面轻松添加特殊功能。 可以注册函数并使用套接字解析器，数据包解析器，调度程序和HNA集等注销它们。
+这样就可以拦截当前操作并用自定义操作替换它。
 
   Plugins that are part of this release(can be found in the lib/ directory):
-
+  作为此发行版的一部分的插件（可以在lib /目录中找到）：
+  
   - Tiny Application Server (TAS).
-
+    微型应用服务器（TAS）。
+    
   - HttpInfo. This plugin implements a simple HTTP server that serves dynamic
     pages with lots of information about the running olsrd process.
-
+    HttpInfo。 这个插件实现了一个简单的HTTP服务器，它为动态页面提供大量有关正在运行的olsrd进程的信息。
+    
   - TxtInfo. This delivers output similar to the above. However, it is intended
     for external tools to use the output.
-
+    TxtInfo。 这提供了与上述类似的输出。 但是，它旨在用于外部工具以使用输出。
+    
   - Mini.
-
+    微型
+    
   - Nameservice.
-
+    命名服务
+    
   - Dynamic Internet gateway. A plugin that dynamically adds and removes Internet
     HNA transmissions based on if there exists a default gateway to Internet
     with hop count = 0(non OLSR gateway). It has been extended to be able to
