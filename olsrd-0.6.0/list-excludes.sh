@@ -1,5 +1,5 @@
 #!/bin/sh
-#
+#shell 脚本
 #
 # LÖist the to be excluded files
 #
