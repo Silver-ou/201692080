@@ -31,6 +31,17 @@ The NIIT kernel module was written by lynxis in 2009.
 The asymmetric gateway tunnels was written by Markus Kittenberg
 and Henning Rogge, but the concept was used by B.A.T.M.A.N before OLSRd.
 
+ETX（预期传输计数）的概念由麻省理工学院的Douglas S. J. De Couto开发（参见http://en.wikipedia.org/wiki/Expected_Transmission_Count）。
+
+最初的ETX设计由柏林Freifunk网络完成（见www.freifunk.net和www.c-base.org），代码和消息格式由Thomas Lopatic编写。
+
+Fisheye由Thomas Lopatic于2005年实施。
+
+LQ-Plugin重写由Henning Rogge于2008年完成。
+
+NIIT内核模块由lynxis于2009年编写。
+
+不对称网关隧道由Markus Kittenberg和Henning Rogge编写，但该概念在OLSRd之前由B.A.T.M.A.N使用。
 
 
     2.) Link quality algorithm
@@ -157,6 +168,86 @@ metrics. Please take a look at src/lq_plugin*.[ch] for inspiration and get in
 contact with us on the OLSR development mailing list in case you plan to
 implement a new metric.
 
+概念：
+--------
+
+OLSRd（自0.5.6版本起）使用无量纲整数值表示每个链接的“成本”。这通常称为链路质量（简称LQ）。有多个LQ插件，每个插件都计算路由器链路的成本。
+目前（版本0.6.0）所有lq_plugins都使用ETX度量（预期的传输计数），但其他的是可能的和可想象的，例如MIC [0]等。
+
+
+每个链路由LQ（链路质量）和NLQ（邻居链路质量）值描述，其描述朝向路由器（LQ）和朝向邻居（邻居链路质量，NLQ）的质量。 LQ和NLQ都可以是0到1之间的值。
+链路的总成本计算为ETX = 1.0 /（LQ * NLQ）。链路的ETX值可以看作是将数据包传送到目标所需的重传次数。 ETX 1.0意味着没有丢包的完美链接。
+
+     + --- + + --- +
+     | A | <--- LQ --- | B |
+     + --- + ---- NLQ  - > + --- +
+
+请注意，LQ和NLQ总是从一个节点的角度来看：节点A到B的LQ是A可以传输到B的数据包的百分比。因此，在OLSR ETX实现中，B必须告诉A它的LQ 。
+
+OLSRd通过选择具有最小链路成本总和的路径段来选择到目标的路径。换一种说法：
+best_path（A，B）= minimum_sum（{A和B之间所有路径的集合}）
+
+
+组态：
+--------------
+
+通过将配置变量“LinkQualityLevel”设置为2来激活链路质量系统。
+
+您可以使用“LinkQualityAlgorithm”参数在配置文件中选择当前链接质量算法。某些嵌入式OLSRd版本仅使用一个插件（主要是etx_ff）进行编译，
+因此请勿对这些代理使用配置选项。
+
+OLSRd 0.6.0中有四种不同的链路质量算法，两种当前的Funkfeuer / Freifunk ETX实现和两种传统实现。
+
+LinkQuality-Algorithm“etx_ff”：
+-------------------------------
+
+“Etx_ff”（ETX Funkfeuer / Freifunk）是OLSRd的当前默认LQ算法。它使用OLSR包的序列号（特定于链路）来确定当前的丢包率。 
+Etx_ff包括滞后机制以抑制LQ和NLQ值的小波动。如果根本没有从某个邻居收到包，则计时器开始降低计算的LQ值，直到接收到下一个包或丢弃链接。 
+Etx_ff仅使用整数运算，因此在没有FPU的嵌入式硬件上运行良好。
+
+etx_ff的消息格式与etx_fpm和etx_float兼容。
+
+
+LinkQuality-Algorithm“etx_ffeth”
+--------------------------------
+
+“Etx_ffeth”是etx_ff的实验性和INCOMPATIBLE扩展（意味着它不会与etx_ff节点互操作）。 
+etx_ff，etx_float和etx_fpm的问题在于它们计算以太网链路的成本与没有丢包的无线链路（ETX 1.0）相同，
+因为etx_ff的编码不能编码低于1.0的链路成本。
+这意味着OLSRd在具有一个以太网链路（ETX 1.0）和一个完美无线链路（ETX 1.0）*的两跳路由上更喜欢具有一些损耗（例如ETX 1.5）的单个无线链路，
+即使后者路径会更好！
+
+“Etx_ffeth”尝试通过为值ETX 0.1引入特殊的LQ编码来解决此问题，该值仅用于没有丢包的以太网链路。
+由于编码不同，etx_ffeth与etx_ff，etx_fpm或etx_float不兼容。这三个实现检测具有LQ 0（ETX无限）的etx_ffeth节点。
+
+etx_ffeth只使用整数运算，因此它在嵌入式硬件上运行良好。
+
+在撰写本文时，etx_ffeth是构建新网状网络的首选指标，其中包括通过LAN电缆（例如菊花链式链路路由器）的链路。
+
+
+Legacy LinkQuality-Algorithm“etx_float”
+----------------------------------------
+
+“Etx_float”通过在传入（或丢失）的Hellos上使用指数老化（具有可配置的老化参数）来计算ETX值。
+它比etx_ff更容易理解，但结果不如etx_ff好，因为它不能使用TC消息进行链路质量计算。 Etx_float使用浮点数学，因此它可能在嵌入式硬件上使用更多CPU。
+
+etx_float的消息格式与etx_fpm和etx_ff兼容。
+
+
+Legacy LinkQuality-Algorithm“etx_fpm”
+--------------------------------------
+
+“Etx_fpm”是etx_float的定点数学实现。它计算与etx_float相同的链路质量，但在嵌入式硬件上要快得多。
+
+etx_fpm的消息格式与etx_float和etx_ff兼容。
+
+
+
+
+构建自己的LinkQuality算法
+----------------------------------------
+
+通过提供的样本，可以轻松扩展OLSRd以支持不同的指标。 请查看src / lq_plugin *。[ch]获取灵感，并在OLSR开发邮件列表中与我们联系，以防您计划实施新指标。
 
 
     3.) Fisheye
@@ -182,6 +273,18 @@ for flooding TCs, which can theoretically lead to inconsistent routes
 and routing loops at the border of the fisheye circles. In practice
 fisheye seems to work well enough that it is a mandatory feature
 for most larger Funkfeuer/Freifunk meshs.
+
+
+通常，OLSR将所有拓扑控制（TC）消息泛洪到所有网格中的路由，给有数百台路由器的大型网格产生了大量开销。
+降低TC的速率可以减少这种开销，但可以延迟路由更改并纠正路由表中的错误。
+
+Fisheye（有时称为Hazy Sighted Link State Routing [1]）机制实现了在这两个问题之间达成妥协的策略。
+仅激活时，每隔8个TC发送到所有网状节点。大多数TC都具有降低的TTL（生存时间）并且仅被发送到路由器的邻域。
+
+具有活动鱼眼机制的当前TTL序列是2,8,2,16,2,8,2和255（最大TTL）。
+
+鱼眼的问题在于它引入了人工边界用于泛洪TC，理论上可以导致鱼眼圈边界处的路线和路由环路不一致。
+在实践中，鱼眼似乎运作良好，它是大多数大型Funkfeuer / Freifunk网格的强制性功能。
 
 
     4.) NIIT (ipv4 over ipv6 traffic)
@@ -211,6 +314,23 @@ HNA6 {
 
 More information on NIIT can be found at: http://wiki.freifunk.net/Niit
 (german)
+
+NIIT是一种特殊的Linux内核设备，可以通过IPv6网络轻松传输IPv4单播流量。 从版本0.6.0开始，OLSRd在路由守护进程中集成了对NIIT的支持。 
+因此，通过IPv6 OLSR网格设置IPv4流量非常容易。 所有路由器管理员需要做的就是将自己的IPv4目标设置为“IPv4映射”的IPv6 HNA，而不是手动创建路由和隧道。
+
+配置示例：
+ - 将本地192.168.1.0/8网络连接到网格
+
+HNA6 {
+   0 :: ffff：C0A8：01：00 120
+}
+
+ - 宣布IPv4互联网网关
+
+HNA6 {
+   0 :: ffff：0：0 96
+}
+
 
 
     5.) Smart gateways (asymmetric gateway tunnels)
@@ -309,6 +429,64 @@ interface created by OLSRD. Because OLSRD uses an arbitrary name for the tunnel
 iface (e.g. tnl_7c41c668) you may want to include a wildcard iptables rule. Example:
 iptables -A FORWARD -o tnl_+ -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
 
+smartgateway机制由Markus Kittenberg和Henning Rogge编写，允许OLSR用户直接选择他们的默认互联网网关，而不是依赖于到达网关的逐跳决策。 
+OLSRd 0.6.0可以创建到网关OLSRd地址的IPIP隧道，以避开Nat-Threshold部分中描述的相同讨厌的影响。
+
+smartgateway代码可以分为两部分，一部分是负责宣布智能网关上行链路的存在，并在客户端节点上选择上行链路并创建到网关的隧道。
+它使用经过修改（但向后兼容）的特殊HNA向客户端发送网关信号。客户端可以使用插件（或集成的默认代码）来选择其中一个可用网关，并在必要时进行更改。
+
+smartgateway系统由几个配置参数设置，其中大多数都具有理智的默认设置。可以通过以下参数打开/关闭整个系统：
+
+SmartGateway <是/否>
+
+如果SmartGateway设置为“no”（默认值为“yes”），则将忽略所有其他参数。
+
+在客户端，有一个附加参数控制您是否允许选择带有NAT（网络地址转换）的传出ipv4网关。
+
+SmartGatewayAllowNAT <是/否>
+
+smartgateway代码的上行链路侧有四个参数来设置上行链路的类型。
+
+SmartGatewayUplink定义将哪种上行链路导出到其他网状节点。通过寻找0.0.0.0/0，:: ffff：0：0/96或2000 :: / 3的本地HNA来检测上行链路的存在。
+默认设置为“both”。
+
+SmartGatewayUplinkNAT定义上行链路的ipv4部分是否使用NAT。
+此设置的默认值为“是”。
+
+SmartGatewaySpeed设置网关的上行链路和下行链路速度，插件可以使用它来为客户端选择正确的网关。默认值为128/1024 kbit / s。
+最终参数SmartGatewayPrefix可用于向客户端发信号通知上行链路的外部IPv6前缀。
+这可能允许客户端更改其本地IPv6地址以使用IPv6网关而无需任何类型的地址转换。
+最大前缀长度为64位，默认为:: / 0（无前缀）。
+
+SmartGatewayUplink <none / ipv4 / ipv6 / both>
+SmartGatewayUplinkNAT <是/否>
+SmartGatewaySpeed <上行链路> <下行链路>
+SmartGatewayPrefix <前缀>
+
+在SmartGW服务器上（OLSR实例通过HNA0 / 0或类似方式在此处“互联网！”），隐式tunl0接口用于将SmartGW客户端发起的传入数据包转发到互联网路由。
+这可能受sysctl rp_filter设置的保护。注意，至少在RedHat内核2.6.18中，加载“ipip”内核模块后net.ipv4.conf.tunl0.rp_filter sysctl文件不存在。
+这可以防止OLSRD关闭过滤器。要解决此问题，请在OLSRD启动脚本中的“modprobe ipip”行之后添加“ip addr add 0.0.0.0/32 dev tunl0”。
+
+虽然SmartGW功能在独立PC上做得很好，但系统构建者在设置路由，防火墙和网关时应牢记以下事实：
+
+a）SmartGW隧道不对称地通信。目的地为Internet服务器的IP数据包通过IPIP隧道发送，但通过标准OLSRD主机路由返回。
+
+b）在SmartGW服务器上，您应该仔细检查防火墙规则和rp_filter默认值。
+虽然通常不可能简单地封装例如将“telnet 127.0.0.1”发送到IPIP并将其发送到SmartGW服务器，
+您的特定配置可能会为入侵者打开其他攻击媒介。
+
+c）不要忘记取消防火墙tunl0-> internet和（如果需要NAT / MASQUERADE）这种沟通路径。
+
+d）当SmartGW服务器不使用特殊路由时，SmartGW客户端会为其功能插入策略路由规则。
+通过使用默认配置，OLSRD标准默认路由在表223和OLSRD SmartGW中维护表224中的默认路由。
+如果主表中没有默认路由（使用“ip route ls”可见），则仅检查两个表。
+使用“ip route ls table 223”或“ip route ls table 224”进行调试/监控。
+您也可以激活txtinfo插件和“wget -O  -  http：// localhost：2006 / gateway”。
+
+e）对于独立客户端（运行OLSRD以便浏览的Notebook用户），降低的IPIP隧道MTU没有问题。
+如果您进行代理路由，例如对于没有OLSRD的连接的LAN客户端，您可能需要对OLSRD创建的隧道接口进行MSS钳位。
+因为OLSRD对隧道iface使用任意名称（例如tnl_7c41c668），所以您可能希望包含通配符iptables规则。
+示例：iptables -A FORWARD -o tnl_ + -p tcp --tcp-flags SYN，RST SYN -j TCPMSS --clamp-mss-to-pmtu
     6.) NatThreshold
 ************************
 
@@ -343,7 +521,20 @@ Smart Gateways can replace NatThreshold all together because they allow sending
 traffic directly to a gateway circumventing the problems described above which
 stem from a hop-by-hop routing approach 
 
+Sven Ola引入了NatThreshold选项来抑制OLSRd的一个非常烦人的问题，即切换默认网关。 
+如果路由器位于具有相似路径成本的两个Internet网关之间，则为默认路由（0.0.0.0/0）由于链路指标的正常波动，将在两个网关之间不断切换。 
+每当OLSRd确定其他NAT网关“更好”时，切换到此新网关将导致所有连接会话（TCP和HTTP）终止。
+用户体验将非常痛苦，用户将体验挂起的SSH和HTTP会话（或使用TCP的任何事情）。
 
+NatThreshold试图通过引入滞后因子来选择到默认网关的路由来提供帮助。 仅当新网关的成本低于当前网关路径成本乘以NatThreshold时，节点才会切换网关。
+简而言之：
+if (cost(new_gateway) < cost(current_gw)*NatThreshold)) {
+	switch_gateway();
+  }
+实践经验表明，这导致了更好的默认网关选择质量，即使（理论上）一个小的NatThreshold和Fisheye可以导致持久的路由环路。 
+请注意，即使启用了NatThreshold，一些用户仍将体验网关切换。 但是，大多数用户不会。
+
+智能网关可以一起替换NatThreshold，因为它们允许直接向网关发送流量，从而避免上述问题，这些问题源于逐跳路由方法
 
      7.) References
 ************************
