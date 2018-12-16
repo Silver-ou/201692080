@@ -2,7 +2,7 @@
 #
 # We expect warning options for gcc as arguments and return the ones which are
 # accepted by the given gcc.
-#
+#同gcc-warnings
 
 set -ue
 #set -vx
