@@ -1,4 +1,5 @@
 cheat sheet for making a (stable) release tarball.
+制作一个（稳定）释放tarball的备忘单。
 
 0. check if your name settings in .hgrc are correct. (have
    your real name and email address in there).
