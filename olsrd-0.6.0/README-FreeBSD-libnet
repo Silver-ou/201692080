@@ -1,4 +1,6 @@
 Instructions for FreeBSD libnet build
+FreeBSD libnet构建说明
+
 spoggle@gmail.com
 
 libnet URL: http://www.packetfactory.net/libnet/
@@ -8,9 +10,11 @@ FreeBSD Ports: /usr/ports/net/libnet-devel/
 The BSD networking is missing features that prevent the use of
 multiple interfaces with olsrd.  By using libnet we can get around
 the problem and support this feature.
+BSD网络缺少阻止使用olsrd的多个接口的功能。 通过使用libnet，我们可以解决问题并支持此功能。
 
 1) From the FreeBSD ports collection install libnet-devel, plain
    libnet is NOT sufficient!
+从FreeBSD ports collection安装libnet-devel，普通的libnet是不够的！
 
   % cd /usr/ports/net/libnet-devel
   % make install
@@ -22,6 +26,7 @@ the problem and support this feature.
 
 3) Change into the main directory of the olsrd source and build the
    daemon:
+切换到olsrd源的主目录并构建守护进程：
 
   % cd <blah>
   % gmake OS=fbsd-ll
