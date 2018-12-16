@@ -5,6 +5,7 @@ test -f ${0%/*}/src/cfgparser/oparse.c && {
 This script reformats all source files. Be careful
 with doing so. You need a clean source tree, e.g.
 reformatting of bison/flex output may not work well.
+此脚本重新格式化所有源文件。 这样做要小心。 你需要一个干净的源树，例如 重新格式化bison/flex输出可能效果不佳。
 
 For these reasons: run "make uberclean" first.
 EOF
@@ -22,8 +23,9 @@ EOF
   test "y" = "$l" || exit 1
 }
 
-sed -i 's/Andreas T.\{1,6\}nnesen/Andreas Tonnesen/g;s/Andreas T�nnesen/Andreas Tonnesen/g;s/Andreas Tønmnesen/Andreas Tonnesen/' $(find -type f -not -path "*/.hg*" -not -name ${0##*/})
-sed -i 's///g;s/[	 ]\+$//' $(find -name "*.[ch]" -not -path "*/.hg*")
+sed -i 's/Andreas T.\{1,6\}nnesen/Andreas Tonnesen/g;s/Andreas Tønnesen/Andreas Tonnesen/g;s/Andreas TÃ¸nmnesen/Andreas Tonnesen/' $(find -type f -not -path "*/.hg*" -not -name ${0##*/})
+sed -i 's/
+//g;s/[	 ]\+$//' $(find -name "*.[ch]" -not -path "*/.hg*")
 
 addon=
 test "--cmp" = "$1" && {
