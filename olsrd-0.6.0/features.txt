@@ -1,9 +1,9 @@
 Features supported by the different versions of olsrd.
 
-    X   supported
-    !   support planned
-    -   support not planned
-    ?   unsure
+    X   supported             支持的
+    !   support planned       支持计划
+    -   support not planned   支持没有计划
+    ?   unsure                不确定
 
                                    Linux  Windows  FreeBSD  OSX
 
@@ -11,27 +11,38 @@ IPv6                                 X       !        !      !
 
 automatically enable IP              X       X        X      X 
 forwarding
+自动启用IP转发
 
 automatically disable ICMP           X       !        X      X 
 redirect messages
+自动禁用ICMP重定向消息
 
 automatically disable                X       ?        ?      ?
 anti-spoofing
+自动禁用反欺骗
 
 use 255.255.255.255 as broadcast     X       ?        X      !
 address on a single interface
+在单个接口上使用255.255.255.255
+作为广播地址
 
 use 255.255.255.255 as broadcast     X       ?        X      !
 address on multiple interfaces
+在多个接口上使用255.255.255.255
+作为广播地址
 
 use the same subnet broadcast        X       -        X      -
 address on multiple interfaces
+在多个接口上使用相同的子网广播地址
 
 initially delete default routes      X       !        !      !
+最初删除默认路由
 
 recognize WLAN interfaces            X       X        X      !
+识别WLAN接口
 
 willingness based on                 X       X        ?      ?
 battery power
+愿意基于电池供电
 
 TOS                                  X       -        -      -
