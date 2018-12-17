@@ -427,15 +427,17 @@ To build olsrd you need to have all the regular development tools
 installed. This includes gcc, make, glibc, makedep etc.
 To install to a directory different from /(/etc, /usr/bin) use 
 DESTDIR=targetdir. To use other compilers set CC=yourcompiler.
+要构建olsrd，您需要安装所有常规开发工具。 这包括gcc，make，glibc，makedep等。
+要安装到与/（/ etc，/ usr / bin）不同的目录，请使用DESTDIR = targetdir。 要使用其他编译器，请设置CC = yourcompiler。
 
-To build:
+To build: 构建
  make
-To install(as root):
+To install(as root): root权限安装
  make install
-To delete object files run:
+To delete object files run:  要删除目标文件，请运行：
  make clean
-Optionally, to clean all generated files:
- make uberclean
+Optionally, to clean all generated files:  （可选）清除所有生成的文件：
+ make uberclean  
 
 Before running olsrd you must edit the default configuration file 
 /etc/olsrd.conf adding at least what interfaces olsrd is to run on. 
@@ -443,21 +445,29 @@ Options in the config file can also be overridden by command line
 options. See the manual pages olsrd(8) and olsrd.conf(5) for details.
 The binary is named 'olsrd' and is installed in (PREFIX)/usr/sbin. 
 You must have root privileges to run olsrd!
-To run olsrd just type:
+在运行olsrd之前，您必须编辑默认配置文件/etc/olsrd.conf，至少添加要运行的olsrd接口。 
+配置文件中的选项也可以被命令行选项覆盖。 有关详细信息，请参见手册页olsrd（8）和olsrd.conf（5）。
+二进制文件名为'olsrd'，安装在（PREFIX）/ usr / sbin中。
+您必须具有root权限才能运行olsrd！
+
+To run olsrd just type:  要运行olsrd，只需输入：
+
 olsrd
 
 If debug level is set to 0 olsrd will detach and run in the background, 
 if not it will keep running in your shell.
+如果调试级别设置为0，则olsrd将在后台分离并运行，否则它将继续在shell中运行。
 
 ===========
  * WINDOWS
 ===========
 
-*** COMPILING
+*** COMPILING  编译
 
 To compile the Windows version of the OLSR server or the dot_draw
 plugin you need a Cygwin installation with a current version of GCC
 and Mingw32. Simply use
+要编译Windows版本的OLSR服务器或dot_draw插件，您需要使用当前版本的GCC和Mingw32进行Cygwin安装。 简单地使用
 
   make
 
@@ -465,6 +475,8 @@ to build the olsrd executable. Building the dot_draw plugin works
 slightly different, we do not yet have a unified makefile for all
 architectures here. Switch to the dot_draw directory lib/dot_draw/ and
 generate the Windows makefile by saying
+来构建olsrd可执行文件。 构建dot_draw插件的工作方式略有不同，我们还没有为所有体系结构提供统一的makefile。 
+切换到dot_draw目录lib / dot_draw /并通过说明生成Windows makefile
 
   ./mkmf.sh
 
