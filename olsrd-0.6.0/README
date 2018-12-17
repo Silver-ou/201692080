@@ -482,18 +482,21 @@ generate the Windows makefile by saying
 
 This will generate "Makefile.win32" by adding dependencies to
 "Makefile.win32.in". Then just say
+这将通过向“Makefile.win32.in”添加依赖项来生成“Makefile.win32”。 然后就说
 
   make -f Makefile.win32
 
 to build the dot_draw plugin. However, make sure that you have build
 olsrd before that, as the dot_draw plugin requires some object files
 that are only generated when olsrd is built.
+来构建dot_draw插件。 但是，请确保在此之前构建了olsrd，因为dot_draw插件需要一些仅在构建olsrd时生成的目标文件。
 
-*** INTERFACE NAMING
+*** INTERFACE NAMING   接口命名
 
 On Linux network interfaces have nice names like "eth0". In contrast,
 Windows internally identifies network interfaces by pretty awkward
 names, for example:
+在Linux网络接口上有很好的名称，如“eth0”。 相比之下，Windows通过非常尴尬的名称在内部识别网络接口，例如：
 
   "{EECD2AB6-C2FC-4826-B92E-CAA53B29D67C}"
 
@@ -501,18 +504,23 @@ Hence, the Windows version implements its own naming scheme that maps
 each internal name to a made-up name like "if03", which is easier to
 memorize. Simply invoke the OLSR server as follows to obtain its view
 of your interfaces:
+因此，Windows版本实现了自己的命名方案，该方案将每个内部名称映射到像“if03”这样的虚构名称，这样更容易记忆。 
+只需按如下方式调用OLSR服务器即可获得其接口视图：
 
   olsrd.exe -int
 
 This lists the made-up interface names along with their current IP
 addresses to enable you to find out which made-up interface name
 corresponds to which of your physical interfaces.
+这将列出已组成的接口名称及其当前IP地址，以便您找出哪个组成的接口名称对应于哪个物理接口。
 
 "+" in front of the IP addresses means that the OLSR server has
 identified the interface as a WLAN interface. "-" indicates that the
 OLSR server considers this interface to be a wired interface. "?"
 means "no idea". Detection currently only works on NT, 2000, and
 XP. Windows 9x and ME will always display "?".
+IP地址前面的“+”表示OLSR服务器已将接口标识为WLAN接口。 “ - ”表示OLSR服务器将此接口视为有线接口。“？” 意思是“不知道”。 
+检测目前仅适用于NT，2000和XP。 Windows 9x和ME将始终显示“？”。
 
 For techies: The made-up names consist of the string "if" followed by
 a two-digit hex representation of the least significant byte of the
@@ -521,13 +529,15 @@ interface and thus make each made-up name unique. Again, this is
 undocumented and this assumption may be wrong in certain cases. So, if
 the "-int" option reports two interfaces that have the same name,
 please do let me know.
+对于技术人员：组成的名称由字符串“if”后跟Windows内部接口索引的最低有效字节的两位十六进制表示组成，每个接口应该是不同的，从而使每个组成 名字独特。 
+同样，这是没有记录的，在某些情况下这种假设可能是错误的。 因此，如果“-int”选项报告两个具有相同名称的接口，请告诉我们。
 
-*** CONFIGURATION FILE
+*** CONFIGURATION FILE  配置文件
 
 If you do not specify a configuration file, the OLSR server
 ("olsrd.exe") by default attempts to use "olsrd.conf" in your Windows
 directory, e.g. "C:\WINDOWS\olsrd.conf".
-
+如果未指定配置文件，则OLSR服务器（“olsrd.exe”）默认尝试在Windows目录中使用“olsrd.conf”，例如：“C：\ WINDOWS \ olsrd.conf”。
 
 =========================
  * FREEBSD/NETBSD/OPENBSD
@@ -538,17 +548,20 @@ The OpenBSD and NetBSD versions are pretty much untested. They have
 not been extensively tested beyond "doesn't core dump and it looks 
 like it adds routes". In order to build it, you need GNU make. Then 
 use:
+此时FreeBSD端口应该是相对稳定的。
+OpenBSD和NetBSD版本几乎未经测试。 他们没有经过广泛的测试，“没有核心转储，看起来它增加了路线”。 
+为了构建它，你需要GNU make。 然后使用：
 
   gmake
 
-to build the olsrd executable. Then do:
+to build the olsrd executable. Then do:  构建olsrd可执行文件。 然后做：
 
   gmake install
 
 to install the executable, the default configuration file, and the
 manual pages. So, basically it's the same as on Linux. Have a look at
 the Linux section for details.
-
+来安装可执行文件，默认配置文件和手册页。 所以，基本上它与Linux上的相同。 有关详细信息，请查看Linux部分。
 =======
  * OSX
 =======
@@ -556,5 +569,5 @@ the Linux section for details.
 The OS X port is a direct descendant of the FreeBSD port. So, the same
 limitations with respect to testing and maturity apply. Building and
 installing works in the same was as on FreeBSD.
-
+OS X端口是FreeBSD端口的直接后代。 因此，适用于测试和成熟度的相同限制。 与FreeBSD一样，构建和安装工作也是如此。
 
