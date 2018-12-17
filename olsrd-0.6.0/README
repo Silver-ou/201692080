@@ -352,15 +352,22 @@ neighbor. If "For MPR selection only" is active, the link quality
 information is only used to select MPRs that offer the best paths to
 your two-hop neighbors. If "For MPR selection and routing" is active,
 the link quality is additionally used to create the routing table.
+“启用ETX链路质量”告诉OLSR服务器使用ETX度量的变体检测其与其邻居的链路的质量。 
+“窗口大小”指定在计算数据包丢失时要使用的最新数据包的数量。 
+例如，如果此参数设置为10，则OLSR服务器将计算从每个邻居接收的最新10个OLSR数据包中的数据包丢失。 
+如果“仅用于MPR选择”处于活动状态，则链路质量信息仅用于选择为您的两跳邻居提供最佳路径的MPR。 
+如果“For MPR selection and routing”处于活动状态，则还会使用链路质量来创建路由表。
 
 WARNING - Enabling ETX breaks compliance with the OLSR
 standard. ETX-enabled nodes do not inter-operate with nodes that have
 ETX switched off. DO NOT USE NODES WITH DIFFERENT ETX SETTINGS IN A
 SINGLE NETWORK!
+警告 - 启用ETX会破坏对OLSR标准的遵从性。 启用ETX的节点不与已关闭ETX的节点互操作。 不要在单个网络中使用具有不同ETX设置的节点！
 
 The three buttons on the lower right of the "Settings" tab open
 previously saved settings, save the current settings to a
 configuration file, and reset the current settings to default values.
+“设置”选项卡右下角的三个按钮可打开以前保存的设置，将当前设置保存到配置文件，并将当前设置重置为默认值。
 
 If you start the GUI with the path to a configuration file as the only
 command line argument, the GUI opens the given configuration file and
@@ -368,6 +375,8 @@ runs the OLSR server with this configuration. So, saving a
 configuration file with a ".olsr" extension, for example, and making
 "Switch.exe" the handler for ".olsr" files enables you to run the OLSR
 server with a simple double click on the configuration file.
+如果使用配置文件的路径作为唯一的命令行参数启动GUI，GUI将打开给定的配置文件并使用此配置运行OLSR服务器。 
+因此，例如，保存带有“.olsr”扩展名的配置文件，并使“Switch.exe”成为“.olsr”文件的处理程序，只需双击配置文件即可运行OLSR服务器。
 
 The "Output" tab shows the output of the currently running OLSR
 server. The output is limited to 1000 lines. The 1001st line will make
@@ -376,6 +385,9 @@ simply invokes the OLSR server "olsrd.exe" and intercepts its console
 output. Use the four buttons on the upper right of the tab to freeze
 the output, resume frozen output, save the output to a file, or clear
 the output.
+“输出”选项卡显示当前运行的OLSR服务器的输出。 输出限制为1000行。 第1001行将使第一行消失，依此类推。 
+单击“开始”时，GUI只调用OLSR服务器“olsrd.exe”并拦截其控制台输出。 
+使用选项卡右上角的四个按钮冻结输出，恢复冻结输出，将输出保存到文件或清除输出。
 
 The "Nodes" tab contains information about the nodes that the OLSR
 server currently knows about. If you click on the address of a node in
@@ -383,9 +395,13 @@ the "Node list" list box, the GUI populates the three "Node
 information" list boxes on the right with the multi-point relays of
 the selected node (MPR), the interfaces of the selected node (MID),
 and the non-OLSR networks accessible via the selected node (HNA).
+“节点”选项卡包含有关OLSR服务器当前知道的节点的信息。 
+如果单击“节点列表”列表框中节点的地址，GUI将使用所选节点（MPR）的多点中继填充右侧的三个“节点信息”列表框， 
+选定节点（MID）和可通过所选节点（HNA）访问的非OLSR网络。
 
 The "Routes" tab shows the routes that the currently running OLSR
 server has added.
+“路由”选项卡显示当前运行的OLSR服务器添加的路由。
 
 The default settings for the "Settings" tab are taken from the
 "Default.olsr" file. The configuration of the last interface in this
@@ -397,6 +413,10 @@ the special name of "GUI". This tells the GUI to use the configuration
 of the interface for the per-interface settings and to forget about
 this interface afterward. See the comments in the "Default.olsr" file
 for details.
+“设置”选项卡的默认设置取自“Default.olsr”文件。 此文件中最后一个接口的配置用于填充“设置”选项卡中的每个接口设置（HELLO间隔等）。 
+如果您不想在“Default.olsr”中指定任何接口，则会出现问题，即您没有这样的最后一个接口。 
+在这种情况下，只需创建一个特殊名称为“GUI”的界面。 这告诉GUI使用接口的配置进行每个接口的设置，然后忘记这个接口。 
+有关详细信息，请参阅“Default.olsr”文件中的注释。
 
 
 =========
