@@ -158,19 +158,23 @@ OLSR的各种实体的设计允许人们在OLSR的大多数方面轻松添加特
     HNA transmissions based on if there exists a default gateway to Internet
     with hop count = 0(non OLSR gateway). It has been extended to be able to
     ping Internet nodes to check for connectivity as well.
-
+    动态Internet网关。 一个插件，根据是否存在跳数为0的非默认网关（非OLSR网关），动态添加和删除Internet HNA传输。 
+    它已被扩展为能够ping Internet节点以检查连接性。
+    
   - Dot draw. A plugin that produces output in the dot format representing
     the network topology.
-
+    点画。 一种插件，以点格式生成表示网络拓扑的输出。
+    
   - Secure OLSR plugin. This plugin adds a signature to all messages
     to ensure data integrity. This way only nodes with access to the
     shared key can participate in the routing.
     You need to have the OpenSSL libs installed to use this plugin.
-
+    安全的OLSR插件。 此插件为所有消息添加签名以确保数据完整性。 这样，只有访问共享密钥的节点才能参与路由。
+    需要安装OpenSSL库才能使用此插件。
 
 
 ========================
- * LINK QUALITY ROUTING
+ * LINK QUALITY ROUTING   链接质量路由
 ========================
 
 Release 0.4.8 is the first version of olsrd that implements the ETX
