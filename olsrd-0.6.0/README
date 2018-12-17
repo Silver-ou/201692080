@@ -181,22 +181,27 @@ Release 0.4.8 is the first version of olsrd that implements the ETX
 link quality metric. This enables olsrd to prefer routes that have a
 superior overall quality to routes that are worse but consist of less
 hops. Have a look at the README-Link-Quality.html file for details.
+版本0.4.8是实现ETX链路质量度量的olsrd的第一个版本。 这使得olsrd更喜欢具有更高整体质量的路由更糟糕但路由更少的路由。 
+有关详细信息，请查看README-Link-Quality.html文件。
 
 ==================
- * KNOWN PROBLEMS
+ * KNOWN PROBLEMS   已知的问题
 ==================
 
 There is no synchronization concept (and thus - and for Gods sake -  no
 code). Some plugins use threads for concurrency so this should be solved.
 ATM the bmf plugin is the only one using threads.
+没有同步概念（因此 - 为了上帝的缘故 -  nocode）。 一些插件使用线程进行并发，因此应该解决这个问题。
+ATM bmf插件是唯一使用线程的插件。
 
 ===============
- * FUTURE WORK
+ * FUTURE WORK    未来工作
 ===============
 
 Future work concentrates on reduction of ressource (ab)use and to make
 it more scalable. Of course additional useful plugins are always
 appreciated.
+未来的工作集中在减少资源，（滥）用和使其更具可扩展性。当然，其他有用的插件总是受到赞赏。
 
 The current track of development is documented in the OLSR-NG 
 project: http://olsr.funkfeuer.at
@@ -212,43 +217,55 @@ project: http://olsr.funkfeuer.at
 
 Olsrd is implemented in pure C with very few dependencies. Olsrd is 
 known to run on various hardware like:
- * x86    - your regular PC
- * PPC    - Macintosh hardware
- * MIPSEL - Embedded systems like the LinkSys WRT54g
- * ARM    - Embedded systems like Compaq/HP iPaq
+Olsrd在纯C中实现，具有很少的依赖性。 众所周知，Olsrd可以在各种硬件上运行：
+
+ * x86    - your regular PC    常规PC
+ * PPC    - Macintosh hardware   Macintosh硬件
+ * MIPSEL - Embedded systems like the LinkSys WRT54g     LinkSys WRT54g等嵌入式系统
+ * ARM    - Embedded systems like Compaq/HP iPaq     Compaq / HP iPaq等嵌入式系统
+ 
 A binary tarball featuring x86, MIPSEL and ARM binaries is available
 for download at olsr.org
+可以从olsr.org下载具有x86，MIPSEL和ARM二进制文件的二进制tarball
 
 Ports exist for all major operating systems:
+所有主要操作系统都有端口：
+
 - Linux
 - Mac OS X
 - NetBSD/OpenBSD/FreeBSD: ATM the main development occurs on Linux with
          GNU tools so occasionally it needs some minor tweaks to compile
          it on *BSD. Please send patches if you fix problems there.
+         ATM的主要开发发生在使用GNU工具的Linux上，所以偶尔需要一些小的调整才能在* BSD上编译它。 如果您在那里修复问题，请发送补丁。
+         
 - Win32: You need (the relevant parts of) cygwin to compile the daemon
          as such. The installer and GUI needs VisualC++ though.
          Win32 is the least supported port. Feel free to send patches!
+         你需要（cygwin的相关部分）来编译守护进程。 安装程序和GUI需要VisualC ++。
+          Win32是受支持最少的端口。 随意发送补丁！
 
 Packages for the operating systems and various distributions are available
 at olsr.org. Feel free to package it and announce it on the mailing lists.
+    olsr.org提供了操作系统和各种发行版的软件包。 随意打包并在邮件列表上公布。
 
-
-===========
- * PLUGINS
+=========== 
+ * PLUGINS      插件
 ===========
 
 All the available plugins are also implemented in C and requires gcc/libc
 to build. the dot_draw plugin compiles for Windows and GNU/Linux. the rest
 of the plugins will only compile for GNU/Linux.
-Building the plugins are just a matter of executing:
+所有可用的插件也在C中实现，需要构建gcc / libc。 dot_draw插件为Windows和GNU / Linux编译。 其余的插件只能为GNU / Linux编译。
+
+Building the plugins are just a matter of executing:  构建插件只需执行：
 make
-while installing requires(as root):
+while installing requires(as root): 安装时需要（以root身份）：
 make install
-in the plugins top directory (i.e. "lib/$plugin/").
-To use the plugins add them to the olsrd configuration file.
+in the plugins top directory (i.e. "lib/$plugin/").  在插件顶级目录中（即"lib/$plugin/"）。
+To use the plugins add them to the olsrd configuration file.  要使用插件，请将它们添加到olsrd配置文件中。
 
 =====================
- * OS SUPPORT STATUS
+ * OS SUPPORT STATUS  操作系统支持状态
 =====================
 
 COMPONENT/OS	Linux	Win32	FreeBSD	NetBSD	OpenBSD	OSX
@@ -277,42 +294,53 @@ LEGEND:   +/+ = compiles/runs
           ?   = unknown
 
 =================
- * GUI FRONTENDS
+ * GUI FRONTENDS     GUI 前端
 =================
 
 A GUI front end for GNU/Linux using GTK is available in the gui/ 
 directory. This implementation is no longer supported, and might
 not work any more. It will be completly removed in a future release.
+gui /目录中提供了使用GTK的GNU / Linux GUI前端。 不再支持此实现，并且可能不再起作用。 它将在以后的版本中完全删除。
 
 There currently is, however, a native MFC-based Windows GUI. Unlike
 olsrd the GUI has to be compiled with Visual C++ 6. It can be found in
 the gui/win32/ directory. Simply open the "Frontend.dsw" workspace in
 the Visual C++ 6 IDE. Then compile "Frontend" and "Shim", which
 creates "Switch.exe" and "Shim.exe".
+但是，目前有一个基于MFC的本机Windows GUI。 与olsrd不同，GUI必须使用Visual C ++ 6进行编译。它可以在gui / win32 /目录中找到。 
+只需在Visual C ++ 6 IDE中打开“Frontend.dsw”工作区即可。 然后编译“Frontend”和“Shim”，创建“Switch.exe”和“Shim.exe”。
 
 To run the Windows GUI simply make sure that "Switch.exe", "Shim.exe",
 "olsrd.exe", "olsrd_cfgparser.dll", and "Default.olsr" are located in
 the same directory and run "Switch.exe". "Shim.exe" is just an
 auxiliary console application that is required by "Switch.exe".
+要运行Windows GUI，只需确保“Switch.exe”，“Shim.exe”，“olsrd.exe”，“olsrd_cfgparser.dll”和“Default.olsr”位于同一目录中并运行“Switch.exe”。
+“Shim.exe”只是“Switch.exe”所需的辅助控制台应用程序。
 
 The GUI is pretty self-explanatory. The three buttons on the lower
 right of the GUI window start the OLSR server, stop the OLSR server,
 and exit the GUI.
+GUI非常明显。 GUI窗口右下角的三个按钮启动OLSR服务器，停止OLSR服务器并退出GUI。
 
 Use the "Settings" tab to specify the options that the GUI uses to run
 the OLSR server "olsrd.exe". When you click "Start" the GUI generates
 a temporary configuration file from the information given by the
 "Settings" tab. This temporary configuration file is passed to the
 OLSR server via its "-f" option.
+使用“设置”选项卡指定GUI用于运行OLSR服务器“olsrd.exe”的选项。 单击“开始”时，GUI将根据“设置”选项卡提供的信息生成临时配置文件。
+此临时配置文件通过其“-f”选项传递给OLSR服务器。
 
 "Offer Internet connection" is only available if you have an Internet
 connection, i.e. if you have a default route configured. If you tick
 this option an HNA entry for the default route is added to the
 temporary configuration file, allowing other nodes in the OLSR network
 to use your Internet connection.
+“提供Internet连接”仅在您具有Internet连接时才可用，即，如果您配置了默认路由。 
+如果勾选此选项，则会将默认路由的HNA条目添加到临时配置文件中，从而允许OLSR网络中的其他节点使用您的Internet连接。
 
 IP version 6 cannot currently be selected, as support for IPv6 is not
 yet complete in the Windows version.
+目前无法选择IP版本6，因为Windows版本中尚未完成对IPv6的支持。
 
 "Enable ETX link quality" tells the OLSR server to detect the quality
 of its links to its neighbors using a variant of the ETX
