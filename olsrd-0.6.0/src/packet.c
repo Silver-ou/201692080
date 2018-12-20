@@ -60,7 +60,7 @@ static bool sending_tc = false;
  *@return nada
  */
 void
-olsr_free_hello_packet(struct hello_message *message)
+olsr_free_hello_packet(struct hello_message *message)   //释放hello_packet
 {
   struct hello_neighbor *nb;
 
@@ -85,7 +85,7 @@ olsr_free_hello_packet(struct hello_message *message)
  *@return 0
  */
 int
-olsr_build_hello_packet(struct hello_message *message, struct interface *outif)
+olsr_build_hello_packet(struct hello_message *message, struct interface *outif)       //build he;;o_packet
 {
   struct hello_neighbor *message_neighbor, *tmp_neigh;
   struct link_entry *links;
@@ -291,7 +291,7 @@ olsr_build_hello_packet(struct hello_message *message, struct interface *outif)
  *@return nada
  */
 void
-olsr_free_tc_packet(struct tc_message *message)
+olsr_free_tc_packet(struct tc_message *message)     //释放tc_packet
 {
   struct tc_mpr_addr *mprs;
 
@@ -314,7 +314,7 @@ olsr_free_tc_packet(struct tc_message *message)
  *@return 0
  */
 int
-olsr_build_tc_packet(struct tc_message *message)
+olsr_build_tc_packet(struct tc_message *message)   //build tc_packet
 {
   struct tc_mpr_addr *message_mpr;
   struct neighbor_entry *entry;
@@ -351,7 +351,7 @@ olsr_build_tc_packet(struct tc_message *message)
       }
     case (1):
       {
-        /* 1 = Add all MPR selectors and selected MPRs */
+        /* 1 = Add all MPR selectors and selected MPRs */       //添加MPR节点
         if ((entry->is_mpr) || (olsr_lookup_mprs_set(&entry->neighbor_main_addr) != NULL)) {
           //printf("\t%s\n", olsr_ip_to_string(&mprs->mpr_selector_addr));
           message_mpr = olsr_malloc_tc_mpr_addr("Build TC 2");
@@ -405,7 +405,7 @@ olsr_build_tc_packet(struct tc_message *message)
  */
 
 void
-olsr_free_mid_packet(struct mid_message *message)
+olsr_free_mid_packet(struct mid_message *message)     //释放mid_packet
 {
   struct mid_alias *tmp_adr, *tmp_adr2;
 
