@@ -64,17 +64,17 @@ static char pulsedata[] = { '\\', '|', '/', '-' };
 static uint8_t pulse_state = 0;
 
 void
-generate_hello(void *p)
+generate_hello(void *p)     //用于产生一个消息
 {
   struct hello_message hellopacket;
   struct interface *ifn = (struct interface *)p;
 
   olsr_build_hello_packet(&hellopacket, ifn);
 
-  if (queue_hello(&hellopacket, ifn))
-    net_output(ifn);
+  if (queue_hello(&hellopacket, ifn))         //调用queue_hello函数将生成带有参数hellopacket内容的HELLO包
+    net_output(ifn);                         //发送Hello包
 
-  olsr_free_hello_packet(&hellopacket);
+  olsr_free_hello_packet(&hellopacket);      //释放packet
 
 }
 
