@@ -117,19 +117,19 @@ struct lq_hello_header {
 };
 
 /* deserialized LQ_TC */
-struct lq_tc_message {
-  struct olsr_common comm;
-  union olsr_ip_addr from;
-  uint16_t ansn;
-  struct tc_mpr_addr *neigh;
+struct lq_tc_message {            //拓扑数据包的格式
+  struct olsr_common comm;        
+  union olsr_ip_addr from;        //达到目的地的倒数第二跳的地址
+  uint16_t ansn;                   //最近收到的TC分组的ANSN的序列号
+  struct tc_mpr_addr *neigh;        //指向广播邻居集的地址结构
 };
 
 /* serialized LQ_TC */
 
-struct lq_tc_header {
-  uint16_t ansn;
-  uint8_t lower_border;
-  uint8_t upper_border;
+struct lq_tc_header {          //tc数据包的首部
+  uint16_t ansn;                //最近收到的TC分组的ANSN的序列号
+  uint8_t lower_border;       //下一级的边界
+  uint8_t upper_border;       //上一级的边界
 };
 
 static INLINE void
