@@ -74,8 +74,8 @@ olsr_init_mid_set(void)
     mid_set[idx].next = &mid_set[idx];
     mid_set[idx].prev = &mid_set[idx];
 
-    reverse_mid_set[idx].next = &reverse_mid_set[idx];
-    reverse_mid_set[idx].prev = &reverse_mid_set[idx];
+    reverse_mid_set[idx].next = &reverse_mid_set[idx];   //下一跳的节点
+    reverse_mid_set[idx].prev = &reverse_mid_set[idx];   //上一跳的节点
   }
 
   return 1;
