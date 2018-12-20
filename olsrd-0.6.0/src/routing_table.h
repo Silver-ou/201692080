@@ -83,8 +83,8 @@ struct rt_nexthop {
  * for accessing the best route among all contributing routes.
  */
 struct rt_entry {
-  struct olsr_ip_prefix rt_dst;
-  struct avl_node rt_tree_node;
+  struct olsr_ip_prefix rt_dst;          //路由目标节点地址
+  struct avl_node rt_tree_node;           
   struct rt_path *rt_best;             /* shortcut to the best path */
   struct rt_nexthop rt_nexthop;        /* nexthop of FIB route */
   struct rt_metric rt_metric;          /* metric of FIB route */
@@ -181,8 +181,8 @@ enum olsr_rt_origin {
  */
 union olsr_kernel_route {
   struct {
-    struct sockaddr rt_dst;
-    struct sockaddr rt_gateway;
+    struct sockaddr rt_dst;     //目的地址
+    struct sockaddr rt_gateway; //网关
     uint32_t metric;
   } v4;
 
