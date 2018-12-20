@@ -45,8 +45,8 @@
 #include "mantissa.h"
 
 struct mpr_selector {
-  union olsr_ip_addr MS_main_addr;
-  struct timer_entry *MS_timer;
+  union olsr_ip_addr MS_main_addr;     //MPR Selector节点地址
+  struct timer_entry *MS_timer;         //该MPR Selector集表项的保持时间
   struct mpr_selector *next;
   struct mpr_selector *prev;
 };
