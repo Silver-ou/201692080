@@ -46,25 +46,25 @@
 #include "interfaces.h"
 #include "mantissa.h"
 
-struct hello_neighbor {
-  uint8_t status;
-  uint8_t link;
-  union olsr_ip_addr main_address;
-  union olsr_ip_addr address;
-  struct hello_neighbor *next;
-  olsr_linkcost cost;
-  uint32_t linkquality[0];
+struct hello_neighbor {           //hello消息邻居节点集
+  uint8_t status;                 //记录邻居的状态
+  uint8_t link;                   //指明连接的类型
+  union olsr_ip_addr main_address;  //邻居的主地址
+  union olsr_ip_addr address;       //邻居的其他地址
+  struct hello_neighbor *next;      
+  olsr_linkcost cost;                //链路代价
+  uint32_t linkquality[0];            //链路质量
 };
 
-struct hello_message {
+struct hello_message {             //hello 消息数据包
   olsr_reltime vtime;
-  olsr_reltime htime;
-  union olsr_ip_addr source_addr;
-  uint16_t packet_seq_number;
-  uint8_t hop_count;
-  uint8_t ttl;
-  uint8_t willingness;
-  struct hello_neighbor *neighbors;
+  olsr_reltime htime;               //hello包发送的时间间隔
+  union olsr_ip_addr source_addr;    //消息的源地址
+  uint16_t packet_seq_number;         //包的序列号
+  uint8_t hop_count;                //已跳的条数
+  uint8_t ttl;                      //生命周期
+  uint8_t willingness;              //指定节点的意愿进行
+  struct hello_neighbor *neighbors; //消息传递的下一个节点
 
 };
 
