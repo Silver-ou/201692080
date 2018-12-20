@@ -56,9 +56,9 @@ struct neighbor_2_list_entry {
 #define OLSR_NBR2_LIST_JITTER 5 /* percent */
 
 struct neighbor_entry {
-  union olsr_ip_addr neighbor_main_addr;
-  uint8_t status;
-  uint8_t willingness;
+  union olsr_ip_addr neighbor_main_addr;    //节点i的一跳邻居地址
+  uint8_t status;                            //节点i与其邻居之间的链路状态（3种）
+  uint8_t willingness;                     //邻居节点为其他节点转发分组的意愿程度（5种）
   bool is_mpr;
   bool was_mpr;                        /* Used to detect changes in MPR */
   bool skip;
