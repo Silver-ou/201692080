@@ -89,11 +89,11 @@ olsr_init_link_set(void)
  * a final "lost all links" hello can be generated to
  * tell your neighbors that you are gone now.
  */
-void olsr_reset_all_links(void) {
-  struct link_entry *link;
+void olsr_reset_all_links(void) {      //重置所有节点的信息，设置成初始值
+  struct link_entry *link;      
 
-  OLSR_FOR_ALL_LINK_ENTRIES(link) {
-    link->ASYM_time = now_times-1;
+  OLSR_FOR_ALL_LINK_ENTRIES(link) {      //遍历所有的节点
+    link->ASYM_time = now_times-1;        
 
     olsr_stop_timer(link->link_sym_timer);
     link->link_sym_timer = NULL;
@@ -174,13 +174,13 @@ lookup_link_status(const struct link_entry *entry)
  * @param address the address to check for
  * @return SYM_LINK if a symmetric link exists 0 if not
  */
-static int
+static int          
 get_neighbor_status(const union olsr_ip_addr *address)
 {
   const union olsr_ip_addr *main_addr;
   struct interface *ifs;
 
-  /* Find main address */
+  /* Find main address */             //通过查找main_addr 来找到节点，
   if (!(main_addr = mid_lookup_main_addr(address)))
     main_addr = address;
 
@@ -190,15 +190,15 @@ get_neighbor_status(const union olsr_ip_addr *address)
     struct link_entry *lnk = lookup_link_entry(main_addr, NULL, ifs);
 
     if (lnk != NULL) {
-      if (lookup_link_status(lnk) == SYM_LINK)
+      if (lookup_link_status(lnk) == SYM_LINK)                //再通过lookup_link_status找出节点链路状态,判断其是否是对称的
         return SYM_LINK;
     }
 
-    /* Get aliases */
+    /* Get aliases */      //查找主地址，并找到端口上其他节点的IP，判断该节点其他端口aliases链路状态
     for (aliases = mid_lookup_aliases(main_addr); aliases != NULL; aliases = aliases->next_alias) {
 
       lnk = lookup_link_entry(&aliases->alias, NULL, ifs);
-      if (lnk && (lookup_link_status(lnk) == SYM_LINK)) {
+      if (lnk && (lookup_link_status(lnk) == SYM_LINK)) {       //判断是否是对称端口，只返回对称端口信息
         return SYM_LINK;
       }
     }
@@ -357,28 +357,28 @@ set_loss_link_multiplier(struct link_entry *entry)
 /*
  * Delete, unlink and free a link entry.
  */
-static void
+static void             //删除节点链路上的所有信息
 olsr_delete_link_entry(struct link_entry *link)
 {
-  struct tc_edge_entry *tc_edge;
+  struct tc_edge_entry *tc_edge;           //定义拓扑边缘节点tc_edge,通过邻居端口地址找出tc_edge边缘链路
 
-  /* delete tc edges we made for SPF */
+  /* delete tc edges we made for SPF */       //删除边缘链路SPF
   tc_edge = olsr_lookup_tc_edge(tc_myself, &link->neighbor_iface_addr);
   if (tc_edge != NULL) {
     olsr_delete_tc_edge_entry(tc_edge);
   }
 
 
-  /* Delete neighbor entry */
+  /* Delete neighbor entry */          //清空邻居链路信息，存储在 hash表中的链路表删除
   if (link->neighbor->linkcount == 1) {
     olsr_delete_neighbor_table(&link->neighbor->neighbor_main_addr);
   } else {
     link->neighbor->linkcount--;
   }
 
-  /* Kill running timers */
-  olsr_stop_timer(link->link_timer);
-  link->link_timer = NULL;
+  /* Kill running timers */               
+  olsr_stop_timer(link->link_timer);     
+  link->link_timer = NULL;         //清空计时的值
   olsr_stop_timer(link->link_sym_timer);
   link->link_sym_timer = NULL;
   olsr_stop_timer(link->link_hello_timer);
@@ -387,10 +387,10 @@ olsr_delete_link_entry(struct link_entry *link)
   link->link_loss_timer = NULL;
   list_remove(&link->link_list);
 
-  free(link->if_name);
+  free(link->if_name);           //释放link的资源空间
   free(link);
 
-  changes_neighborhood = true;
+  changes_neighborhood = true;       //告知其他节点要更新链路状态
 }
 
 /**
@@ -770,15 +770,15 @@ replace_neighbor_link_set(const struct neighbor_entry *old, struct neighbor_entr
  *
  *@return the link status
  */
-static int
+static int        //发送hello消息，维护一个端口的邻居信息
 check_link_status(const struct hello_message *message, const struct interface *in_if)
 {
   int ret = UNSPEC_LINK;
   struct hello_neighbor *neighbors;
 
-  neighbors = message->neighbors;
-  while (neighbors) {
-
+  neighbors = message->neighbors;     
+  while (neighbors) {          //向所有的邻居发送hello_messahe来维护端口信息
+                               
     /*
      * Note: If a neigh has 2 cards we can reach, the neigh
      * will send a Hello with the same IP mentined twice
