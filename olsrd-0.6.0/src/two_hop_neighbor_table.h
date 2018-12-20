@@ -49,9 +49,9 @@
 #define	NB2S_COVERED 	0x1     /* node has been covered by a MPR */
 
 struct neighbor_list_entry {
-  struct neighbor_entry *neighbor;
-  olsr_linkcost second_hop_linkcost;
-  olsr_linkcost path_linkcost;
+  struct neighbor_entry *neighbor;  //指向邻居节点
+  olsr_linkcost second_hop_linkcost;    //两跳链路代价
+  olsr_linkcost path_linkcost;        //路径链路代价
   olsr_linkcost saved_path_linkcost;
   struct neighbor_list_entry *next;
   struct neighbor_list_entry *prev;
@@ -62,7 +62,7 @@ struct neighbor_2_entry {
   uint8_t mpr_covered_count;           /*used in mpr calculation */
   uint8_t processed;                   /*used in mpr calculation */
   int16_t neighbor_2_pointer;          /* Neighbor count */
-  struct neighbor_list_entry neighbor_2_nblist;
+  struct neighbor_list_entry neighbor_2_nblist;   
   struct neighbor_2_entry *prev;
   struct neighbor_2_entry *next;
 };
