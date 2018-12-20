@@ -56,39 +56,39 @@
 #define LINK_LOSS_MULTIPLIER (1<<16)
 
 struct link_entry {
-  union olsr_ip_addr local_iface_addr;
-  union olsr_ip_addr neighbor_iface_addr;
-  const struct interface *inter;
+  union olsr_ip_addr local_iface_addr;         //存放该节点接口IP地址
+  union olsr_ip_addr neighbor_iface_addr;      //存储邻居节点IP地址
+  const struct interface *inter; 
   char *if_name;
-  struct timer_entry *link_timer;
+  struct timer_entry *link_timer;              //链路计时器
   struct timer_entry *link_sym_timer;
   uint32_t ASYM_time;
-  olsr_reltime vtime;
-  struct neighbor_entry *neighbor;
-  uint8_t prev_status;
+  olsr_reltime vtime;                          //接收多长时间后节点可以确保数据包中的消息有效
+  struct neighbor_entry *neighbor;             //链表，存储邻居节点的信息
+  uint8_t prev_status;                         //上一个阶段的状态
 
   /*
    * Hysteresis
    */
-  float L_link_quality;
+  float L_link_quality;                       //记录链路质量
   int L_link_pending;
   uint32_t L_LOST_LINK_time;
-  struct timer_entry *link_hello_timer; /* When we should receive a new HELLO */
-  olsr_reltime last_htime;
+  struct timer_entry *link_hello_timer; /* When we should receive a new HELLO */ //何时收到一个hello消息
+  olsr_reltime last_htime;            
   bool olsr_seqno_valid;
   uint16_t olsr_seqno;
 
   /*
    * packet loss
    */
-  olsr_reltime loss_helloint;
+  olsr_reltime loss_helloint;                 
   struct timer_entry *link_loss_timer;
 
   /* user defined multiplies for link quality, multiplied with 65536 */
-  uint32_t loss_link_multiplier;
+  uint32_t loss_link_multiplier;            //存储用户定义的链路质量倍数
 
   /* cost of this link */
-  olsr_linkcost linkcost;
+  olsr_linkcost linkcost;                   //存储链路的代价值
 
   struct list_node link_list;          /* double linked list of all link entries */
   uint32_t linkquality[0];
