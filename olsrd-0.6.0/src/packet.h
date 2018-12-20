@@ -74,14 +74,14 @@ struct tc_mpr_addr {
   uint32_t linkquality[0];
 };
 
-struct tc_message {
-  olsr_reltime vtime;
-  union olsr_ip_addr source_addr;
+struct tc_message {                   //tc消息数据包的格式
+  olsr_reltime vtime;                 
+  union olsr_ip_addr source_addr;       //源地址
   union olsr_ip_addr originator;
-  uint16_t packet_seq_number;
-  uint8_t hop_count;
-  uint8_t ttl;
-  uint16_t ansn;
+  uint16_t packet_seq_number;             //包的序列号
+  uint8_t hop_count;                    //跳数
+  uint8_t ttl;                          //生命周期
+  uint16_t ansn;                        //ansn：advertised neighbor sequence number 公布邻居节点序列号
   struct tc_mpr_addr *multipoint_relay_selector_address;
 };
 
