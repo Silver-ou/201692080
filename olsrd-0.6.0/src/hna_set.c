@@ -57,7 +57,7 @@ struct olsr_cookie_info *hna_net_mem_cookie = NULL;
 static bool olsr_delete_hna_net_entry(struct hna_net *net_to_delete);
 
 /**
- * Initialize the HNA set
+ * Initialize the HNA set     //初始化HNA set
  */
 int
 olsr_init_hna_set(void)
@@ -69,10 +69,10 @@ olsr_init_hna_set(void)
     hna_set[idx].prev = &hna_set[idx];
   }
 
-  hna_net_timer_cookie = olsr_alloc_cookie("HNA Network", OLSR_COOKIE_TYPE_TIMER);
+  hna_net_timer_cookie = olsr_alloc_cookie("HNA Network", OLSR_COOKIE_TYPE_TIMER);   //数据包头部的Vtime值
 
   hna_net_mem_cookie = olsr_alloc_cookie("hna_net", OLSR_COOKIE_TYPE_MEMORY);
-  olsr_cookie_set_memory_size(hna_net_mem_cookie, sizeof(struct hna_net));
+  olsr_cookie_set_memory_size(hna_net_mem_cookie, sizeof(struct hna_net));     //发信息的表
 
   hna_entry_mem_cookie = olsr_alloc_cookie("hna_entry", OLSR_COOKIE_TYPE_MEMORY);
   olsr_cookie_set_memory_size(hna_entry_mem_cookie, sizeof(struct hna_entry));
