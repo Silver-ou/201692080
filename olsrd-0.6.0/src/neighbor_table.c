@@ -53,13 +53,13 @@
 
 struct neighbor_entry neighbortable[HASHSIZE];
 
-void
-olsr_init_neighbor_table(void)
+void                 
+olsr_init_neighbor_table(void)          //初始化邻居表
 {
   int i;
 
-  for (i = 0; i < HASHSIZE; i++) {
-    neighbortable[i].next = &neighbortable[i];
+  for (i = 0; i < HASHSIZE; i++) {          //将每一个邻居表初始化为指向自身的仅有一个节点的链表
+    neighbortable[i].next = &neighbortable[i];       
     neighbortable[i].prev = &neighbortable[i];
   }
 }
@@ -68,15 +68,15 @@ olsr_init_neighbor_table(void)
  * Unlink, delete and free a nbr2_list entry.
  */
 static void
-olsr_del_nbr2_list(struct neighbor_2_list_entry *nbr2_list)
+olsr_del_nbr2_list(struct neighbor_2_list_entry *nbr2_list)    //删除一个两跳的邻居节点记录
 {
-  struct neighbor_entry *nbr;
+  struct neighbor_entry *nbr;          
   struct neighbor_2_entry *nbr2;
 
-  nbr = nbr2_list->nbr2_nbr;
-  nbr2 = nbr2_list->neighbor_2;
+  nbr = nbr2_list->nbr2_nbr;        //获取两跳邻居节点记录（nbr2_list）中的邻居节点nbr
+  nbr2 = nbr2_list->neighbor_2;     //nbr2_list中两跳邻居节点
 
-  if (nbr2->neighbor_2_pointer < 1) {
+  if (nbr2->neighbor_2_pointer < 1) {        //释放两跳邻居节点nbr2
     DEQUEUE_ELEM(nbr2);
     free(nbr2);
   }
@@ -85,7 +85,7 @@ olsr_del_nbr2_list(struct neighbor_2_list_entry *nbr2_list)
    * Kill running timers.
    */
   olsr_stop_timer(nbr2_list->nbr2_list_timer);
-  nbr2_list->nbr2_list_timer = NULL;
+  nbr2_list->nbr2_list_timer = NULL;        //重置计时器为空
 
   /* Dequeue */
   DEQUEUE_ELEM(nbr2_list);
@@ -93,7 +93,7 @@ olsr_del_nbr2_list(struct neighbor_2_list_entry *nbr2_list)
   free(nbr2_list);
 
   /* Set flags to recalculate the MPR set and the routing table */
-  changes_neighborhood = true;
+  changes_neighborhood = true;    //通知链路中的其他节点更新信息
   changes_topology = true;
 }
 
@@ -105,21 +105,21 @@ olsr_del_nbr2_list(struct neighbor_2_list_entry *nbr2_list)
  *
  * @return positive if entry deleted
  */
-int
+int       //删除给定邻居节点对应的两跳邻居节点
 olsr_delete_neighbor_2_pointer(struct neighbor_entry *neighbor, struct neighbor_2_entry *neigh2)
 {
   struct neighbor_2_list_entry *nbr2_list;
 
-  nbr2_list = neighbor->neighbor_2_list.next;
+  nbr2_list = neighbor->neighbor_2_list.next;     //获取该两跳邻居节点的信息
 
-  while (nbr2_list != &neighbor->neighbor_2_list) {
+  while (nbr2_list != &neighbor->neighbor_2_list) {  //遍历两跳邻居节点列表，知道找到要删除的目标节点
     if (nbr2_list->neighbor_2 == neigh2) {
       olsr_del_nbr2_list(nbr2_list);
-      return 1;
+      return 1;                   //删除成功返回1
     }
     nbr2_list = nbr2_list->next;
   }
-  return 0;
+  return 0;           //失败返回0
 }
 
 /**
