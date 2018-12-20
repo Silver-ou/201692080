@@ -52,17 +52,17 @@
 
 /* deserialized OLSR header */
 
-struct olsr_common {
-  uint8_t type;
-  olsr_reltime vtime;
-  uint16_t size;
-  union olsr_ip_addr orig;
-  uint8_t ttl;
-  uint8_t hops;
-  uint16_t seqno;
+struct olsr_common {      //olsr 的首部
+  uint8_t type;             //消息类型
+  olsr_reltime vtime;      //有效时间
+  uint16_t size;            //消息大小
+  union olsr_ip_addr orig;   //发端地址
+  uint8_t ttl;              //跳数
+  uint8_t hops;             //经历的条数
+  uint16_t seqno;           //消息序列号
 };
 
-/* serialized IPv4 OLSR header */
+/* serialized IPv4 OLSR header */        //ipv4的首部
 
 struct olsr_header_v4 {
   uint8_t type;
@@ -74,7 +74,7 @@ struct olsr_header_v4 {
   uint16_t seqno;
 };
 
-/* serialized IPv6 OLSR header */
+/* serialized IPv6 OLSR header */        //ipv6的首部
 
 struct olsr_header_v6 {
   uint8_t type;
@@ -86,9 +86,9 @@ struct olsr_header_v6 {
   uint16_t seqno;
 };
 
-/* deserialized LQ_HELLO */
+/* deserialized LQ_HELLO */        
 
-struct lq_hello_neighbor {
+struct lq_hello_neighbor {       
   uint8_t link_type;
   uint8_t neigh_type;
   union olsr_ip_addr addr;
