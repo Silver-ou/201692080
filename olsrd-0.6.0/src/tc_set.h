@@ -70,19 +70,19 @@ AVLNODE2STRUCT(edge_tree2tc_edge, struct tc_edge_entry, edge_node);
 
 struct tc_entry {
   struct avl_node vertex_node;         /* node keyed by ip address */
-  union olsr_ip_addr addr;             /* vertex_node key */
+  union olsr_ip_addr addr;             /* vertex_node key */    //最初发送该分组的节点的地址
   struct avl_node cand_tree_node;      /* SPF candidate heap, node keyed by path_etx */
-  olsr_linkcost path_cost;             /* SPF calculated distance, cand_tree_node key */
+  olsr_linkcost path_cost;             /* SPF calculated distance, cand_tree_node key */ //路径代价
   struct list_node path_list_node;     /* SPF result list */
   struct avl_tree edge_tree;           /* subtree for edges */
-  struct avl_tree prefix_tree;         /* subtree for prefixes */
+  struct avl_tree prefix_tree;         /* subtree for prefixes */   
   struct link_entry *next_hop;         /* SPF calculated link to the 1st hop neighbor */
   struct timer_entry *edge_gc_timer;   /* used for edge garbage collection */
   struct timer_entry *validity_timer;  /* tc validity time */
   uint32_t refcount;                   /* reference counter */
-  uint16_t msg_seq;                    /* sequence number of the tc message */
+  uint16_t msg_seq;                    /* sequence number of the tc message */ //消息序列号
   uint8_t msg_hops;                    /* hopcount as per the tc message */
-  uint8_t hops;                        /* SPF calculated hopcount */
+  uint8_t hops;                        /* SPF calculated hopcount */  //跳数
   uint16_t ansn;                       /* ANSN number of the tc message */
   uint16_t ignored;                    /* how many TC messages ignored in a sequence
                                           (kindof emergency brake) */
