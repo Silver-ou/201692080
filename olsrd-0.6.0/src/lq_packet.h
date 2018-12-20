@@ -88,32 +88,32 @@ struct olsr_header_v6 {
 
 /* deserialized LQ_HELLO */        
 
-struct lq_hello_neighbor {       
-  uint8_t link_type;
-  uint8_t neigh_type;
-  union olsr_ip_addr addr;
-  struct lq_hello_neighbor *next;
-  uint32_t linkquality[0];
+struct lq_hello_neighbor {            //邻居节点集hello消息的头部 
+  uint8_t link_type;                  //链接类型
+  uint8_t neigh_type;                 //邻居类型
+  union olsr_ip_addr addr;            //地址
+  struct lq_hello_neighbor *next;     //将要把hello消息传递给的下一个邻居的节点
+  uint32_t linkquality[0];             //链路的质量
 };
 
-struct lq_hello_message {
+struct lq_hello_message {             //消息数据包的首部
   struct olsr_common comm;
-  olsr_reltime htime;
-  uint8_t will;
-  struct lq_hello_neighbor *neigh;
+  olsr_reltime htime;               //hello消息发送间隔
+  uint8_t will;                     //指定节点的意愿进行
+  struct lq_hello_neighbor *neigh;    //消息传递的下一节点
 };
 
 /* serialized LQ_HELLO */
-struct lq_hello_info_header {
-  uint8_t link_code;
-  uint8_t reserved;
-  uint16_t size;
+struct lq_hello_info_header {         //107 - 117  共同形成hello消息数据包的头部
+  uint8_t link_code;                //链路类型
+  uint8_t reserved;                  //保留字段，设置为000000000000
+  uint16_t size;                      //链路消息的大小
 };
 
 struct lq_hello_header {
-  uint16_t reserved;
-  uint8_t htime;
-  uint8_t will;
+  uint16_t reserved;                  //保留字段，设置为00000000
+  uint8_t htime;                       //hello消息发送的时间间隔
+  uint8_t will;                       //描述一个节点携带网络流量的意愿，默认为willing_default
 };
 
 /* deserialized LQ_TC */
