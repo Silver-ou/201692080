@@ -53,13 +53,13 @@ struct mid_address {
   struct mid_address *next_alias;
   uint32_t vtime;
 
-  /* These are for the reverse list */
+  /* These are for the reverse list */  //这些是反向列表
   struct mid_address *prev;
   struct mid_address *next;
 };
 
 /*
- * Contains the main addr of a node and a list of aliases
+ * Contains the main addr of a node and a list of aliases   包含节点的主要地址和别名列表
  */
 struct mid_entry {
   union olsr_ip_addr main_addr;
