@@ -37,7 +37,7 @@
  * the copyright holders.
  *
  */
-
+//主函数。重要文件
 #include <unistd.h>
 #include <signal.h>
 #include <sys/stat.h>
