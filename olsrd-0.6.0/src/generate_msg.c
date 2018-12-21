@@ -79,18 +79,18 @@ generate_hello(void *p)     //用于产生一个hello消息
 }
 
 void
-generate_tc(void *p)
+generate_tc(void *p)         //生成tc消息
 {
-  struct tc_message tcpacket;
+  struct tc_message tcpacket;           
   struct interface *ifn = (struct interface *)p;
 
-  olsr_build_tc_packet(&tcpacket);
+  olsr_build_tc_packet(&tcpacket);    //生成tc包
 
-  if (queue_tc(&tcpacket, ifn) && TIMED_OUT(ifn->fwdtimer)) {
-    set_buffer_timer(ifn);
+  if (queue_tc(&tcpacket, ifn) && TIMED_OUT(ifn->fwdtimer)) {      //放到tc队列中
+    set_buffer_timer(ifn);                                        //设置定时器
   }
 
-  olsr_free_tc_packet(&tcpacket);
+  olsr_free_tc_packet(&tcpacket);                  //释放tc包
 }
 
 void
