@@ -182,17 +182,17 @@ olsr_add_tc_entry(union olsr_ip_addr *adr)
  * Initialize the topology set
  *
  */
-void
+void     //初始化tc
 olsr_init_tc(void)
 {
   OLSR_PRINTF(5, "TC: init topo\n");
 
-  avl_init(&tc_tree, avl_comp_default);
+  avl_init(&tc_tree, avl_comp_default);      //初始化avl树
 
   /*
    * Get some cookies for getting stats to ease troubleshooting.
-   */
-  tc_edge_gc_timer_cookie = olsr_alloc_cookie("TC edge GC", OLSR_COOKIE_TYPE_TIMER);
+   */          //对拓扑表集合的初始化，从cookie中获取相应的值
+  tc_edge_gc_timer_cookie = olsr_alloc_cookie("TC edge GC", OLSR_COOKIE_TYPE_TIMER);    
   tc_validity_timer_cookie = olsr_alloc_cookie("TC validity", OLSR_COOKIE_TYPE_TIMER);
 
   tc_edge_mem_cookie = olsr_alloc_cookie("tc_edge_entry", OLSR_COOKIE_TYPE_MEMORY);
@@ -204,7 +204,7 @@ olsr_init_tc(void)
   /*
    * Add a TC entry for ourselves.
    */
-  tc_myself = olsr_add_tc_entry(&olsr_cnf->main_addr);
+  tc_myself = olsr_add_tc_entry(&olsr_cnf->main_addr);         //配置一个entry，并将其插入到tc树中，会将一条rt_path插入到路由表中
 }
 
 void olsr_delete_all_tc_entries(void) {
@@ -275,7 +275,7 @@ olsr_unlock_tc_entry(struct tc_entry *tc)
  * @param entry the TC entry to delete
  *
  */
-void
+void          //删除tc entry
 olsr_delete_tc_entry(struct tc_entry *tc)
 {
   struct tc_edge_entry *tc_edge;
@@ -286,13 +286,13 @@ olsr_delete_tc_entry(struct tc_entry *tc)
 #endif
 
   /* delete gateway if available */
-#ifdef LINUX_NETLINK_ROUTING
-  olsr_delete_gateway_entry(&tc->addr, FORCE_DELETE_GW_ENTRY);
+#ifdef LINUX_NETLINK_ROUTING             //如果是LINUX_NETLINK_ROUTING,
+  olsr_delete_gateway_entry(&tc->addr, FORCE_DELETE_GW_ENTRY);      //则删除entry网关
 #endif
   /*
    * Delete the rt_path for ourselves.
    */
-  olsr_delete_routing_table(&tc->addr, olsr_cnf->maxplen, &tc->addr);
+  olsr_delete_routing_table(&tc->addr, olsr_cnf->maxplen, &tc->addr);    //删除本地路由表对应的rt_path
 
   /* The edgetree and prefix tree must be empty before */
   OLSR_FOR_ALL_TC_EDGE_ENTRIES(tc, tc_edge) {
@@ -303,14 +303,14 @@ olsr_delete_tc_entry(struct tc_entry *tc)
     olsr_delete_rt_path(rtp);
   } OLSR_FOR_ALL_PREFIX_ENTRIES_END(tc, rtp);
 
-  /* Stop running timers */
+  /* Stop running timers */       //停止计时器，删除清空其信息
   olsr_stop_timer(tc->edge_gc_timer);
   tc->edge_gc_timer = NULL;
   olsr_stop_timer(tc->validity_timer);
   tc->validity_timer = NULL;
 
-  avl_delete(&tc_tree, &tc->vertex_node);
-  olsr_unlock_tc_entry(tc);
+  avl_delete(&tc_tree, &tc->vertex_node);    //从avl树中删除相应的节点，
+  olsr_unlock_tc_entry(tc);                  //将tc_entry的引用值减1
 }
 
 /**
@@ -806,10 +806,10 @@ olsr_input_tc(union olsr_message * msg, struct interface * input_if __attribute_
     return false;
   }
 
-  /* We are only interested in TC message types. */
-  pkt_get_u8(&curr, &type);
-  if ((type != LQ_TC_MESSAGE) && (type != TC_MESSAGE)) {
-    return false;
+  /* We are only interested in TC message types. */  
+  pkt_get_u8(&curr, &type);          //收到tc包时，只关注其类型
+  if ((type != LQ_TC_MESSAGE) && (type != TC_MESSAGE)) {    //类型不是LQ_TC_MESSAGE和TC_MESSAGE
+    return false;                                           //返回错
   }
 
   /*
@@ -822,7 +822,7 @@ olsr_input_tc(union olsr_message * msg, struct interface * input_if __attribute_
     return false;
   }
 
-  pkt_get_reltime(&curr, &vtime);
+  pkt_get_reltime(&curr, &vtime);          //计算有效时间
   pkt_get_u16(&curr, &size);
 
   pkt_get_ipaddress(&curr, &originator);
@@ -850,8 +850,8 @@ olsr_input_tc(union olsr_message * msg, struct interface * input_if __attribute_
       /*
        * Ignore already seen seq/ansn values (small window for mesh memory)
        */
-      if ((tc->msg_seq == msg_seq) || (tc->ignored++ < 32)) {
-        return false;
+      if ((tc->msg_seq == msg_seq) || (tc->ignored++ < 32)) {         //如果消息中的msg_seq和外部变量msg_seq相等且ignored<32
+        return false;                           //消息已处理，忽略该包
       }
 
       OLSR_PRINTF(1, "Ignored to much LQTC's for %s, restarting\n", olsr_ip_to_string(&buf, &originator));
@@ -876,14 +876,14 @@ olsr_input_tc(union olsr_message * msg, struct interface * input_if __attribute_
   }
 
   /*
-   * Generate a new tc_entry in the lsdb and store the sequence number.
+   * Generate a new tc_entry in the lsdb and store the sequence number.  在lsdb中生成一个新的tc_entry并存储序列号。
    */
-  if (!tc) {
+  if (!tc) {     //拓扑表中不存在和tc消息中“消息产生者地址”字段相同的条目，添加新的条目保存序列号
     tc = olsr_add_tc_entry(&originator);
   }
 
   /*
-   * Update the tc entry.
+   * Update the tc entry.     //更新tc_entry,根据之后获得的tc消息数据包的头部信息
    */
   tc->msg_hops = msg_hops;
   tc->msg_seq = msg_seq;
@@ -915,11 +915,11 @@ olsr_input_tc(union olsr_message * msg, struct interface * input_if __attribute_
    * Calculate real border IPs.
    */
   if (borderSet) {
-    borderSet = olsr_calculate_tc_border(lower_border, &lower_border_ip, upper_border, &upper_border_ip);
+    borderSet = olsr_calculate_tc_border(lower_border, &lower_border_ip, upper_border, &upper_border_ip);  //计算boederSet的值
   }
 
   /*
-   * Set or change the expiration timer accordingly.
+   * Set or change the expiration timer accordingly.       //重置定时器
    */
   olsr_set_timer(&tc->validity_timer, vtime, OLSR_TC_VTIME_JITTER, OLSR_TIMER_ONESHOT, &olsr_expire_tc_entry, tc,
                  tc_validity_timer_cookie);
