@@ -39,7 +39,7 @@
  * the copyright holders.
  *
  */
-
+//TC 消息的洪泛
 #include "tc_set.h"
 #include "ipcalc.h"
 #include "mid_set.h"
