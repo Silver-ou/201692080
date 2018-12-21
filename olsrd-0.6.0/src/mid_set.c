@@ -39,17 +39,10 @@
  *
  */
 /*
-一般情况下， HNA 消息生成的包为 OLSR 标准包，所以发送 HNA 运用的是 OLSR 协议的洪泛发包方式。
-下图所示为 HNA 消息的发送函数，从函数中可以看 到， HNA 消息发送时在消息中记录了 init 过程中的 
-vtime ， msgtype ， msgsize 等 数据，而hop_count则用于接收方进行判断消息跳数，接收方借此来判断如何处
-理这条 HNA 消息。
-
-
-函数中的一些判断是在发消息之前确保该节点所发的节点为标准的 HNA 消
-息包，确保该消息符合 OLSR 协议的规范。
-
-检测该 HNA 消息包是否符合 OLSR 消息包的规范，如规范则可
-继续发送，如不符合规范，则返回 false ，不发送包。
+发送 MID 消息的节点将所发消息广播出去，MID 消息包运用缺省转发算法， 该算法的具体内容如下:
+1 如果MID消息的发送者与当前位置的距离超过一跳，则该MID消息停止 转播;
+2如果消息的 D _ addr  Originator 且 Address D _ seq _ num  Message Sequence Number ，那么只有当 D _ retransmitted 的值为 false 且接收消息节点的
+地址不在 D _ iface _ list 中时，才能接受该消息;否则，该消息将被继续发送
 */
 #include <assert.h>
 
