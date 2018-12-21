@@ -39,7 +39,7 @@
  * the copyright holders.
  *
  */
-
+//对路由表进行处理
 #include "routing_table.h"
 #include "ipcalc.h"
 #include "defs.h"
