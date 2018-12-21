@@ -64,15 +64,15 @@
 #define RT_METRIC_DEFAULT 2
 
 /* a composite metric is used for path selection */
-struct rt_metric {
-  olsr_linkcost cost;
-  uint32_t hops;
+struct rt_metric {          //使用矩阵
+  olsr_linkcost cost;         //linkcost
+  uint32_t hops;            //跳数
 };
 
 /* a nexthop is a pointer to a gateway router plus an interface */
 struct rt_nexthop {
-  union olsr_ip_addr gateway;          /* gateway router */
-  int iif_index;                       /* outgoing interface index */
+  union olsr_ip_addr gateway;          /* gateway router */       //下一跳的网关
+  int iif_index;                       /* outgoing interface index */   //接口索引
 };
 
 /*
@@ -81,10 +81,12 @@ struct rt_nexthop {
  * The route entry is the root of a rt_path tree of equal prefixes
  * originated by different routers. It also contains a shortcut
  * for accessing the best route among all contributing routes.
+ 我们的RIB中的每个前缀都需要一个路由条目，其中包含安装在内核FIB中的最佳路径的下一跳。 
+ 路由条目是由不同路由器发起的相等前缀的rt_path树的根。 它还包含一个快捷方式，用于访问所有贡献路线中的最佳路线。
  */
 struct rt_entry {
-  struct olsr_ip_prefix rt_dst;          //路由目标节点地址
-  struct avl_node rt_tree_node;           
+  struct olsr_ip_prefix rt_dst;          //包含了该信息的路由地址与前缀长度
+  struct avl_node rt_tree_node;           //包含val_tree的一些信息，父节点、子节点、左右节点、树的信息值
   struct rt_path *rt_best;             /* shortcut to the best path */
   struct rt_nexthop rt_nexthop;        /* nexthop of FIB route */
   struct rt_metric rt_metric;          /* metric of FIB route */
@@ -103,7 +105,7 @@ LISTNODE2STRUCT(changelist2rt, struct rt_entry, rt_change_node);
  * If during the SPF calculation the tc_entry becomes reachable via
  * a local nexthop it is inserted into the global RIB tree.
  */
-struct rt_path {
+struct rt_path {          //rt_path信息，接收到的rt_path会被加入到路由信息表中，用于计算best_path
   struct rt_entry *rtp_rt;             /* backpointer to owning route head */
   struct tc_entry *rtp_tc;             /* backpointer to owning tc entry */
   struct rt_nexthop rtp_nexthop;
@@ -179,7 +181,7 @@ enum olsr_rt_origin {
 /**
  * IPv4 <-> IPv6 wrapper
  */
-union olsr_kernel_route {
+union olsr_kernel_route {      //核心路由表
   struct {
     struct sockaddr rt_dst;     //目的地址
     struct sockaddr rt_gateway; //网关
