@@ -38,7 +38,7 @@
  * the copyright holders.
  *
  */
-
+//HELLO 、 MID 、 TC 、 HNA 消息的生成函数
 #include "generate_msg.h"
 #include "defs.h"
 #include "olsr.h"
