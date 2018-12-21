@@ -83,18 +83,18 @@ static struct neighbor_2_list_entry *olsr_find_2_hop_neighbors_with_1_link(int);
  *
  *@return a linked list of allocated neighbor_2_list_entry structures
  */
-static struct neighbor_2_list_entry *
+static struct neighbor_2_list_entry *          //查找存在一条连接的两跳邻居节点链表
 olsr_find_2_hop_neighbors_with_1_link(int willingness)
 {
 
   uint8_t idx;
   struct neighbor_2_list_entry *two_hop_list_tmp = NULL;
   struct neighbor_2_list_entry *two_hop_list = NULL;
-  struct neighbor_entry *dup_neighbor;
-  struct neighbor_2_entry *two_hop_neighbor = NULL;
+  struct neighbor_entry *dup_neighbor;                     //记录在邻居节点集合中已经存在的邻居节点
+  struct neighbor_2_entry *two_hop_neighbor = NULL;        //记录一个两跳邻居节点的局部变量
 
-  for (idx = 0; idx < HASHSIZE; idx++) {
-
+  for (idx = 0; idx < HASHSIZE; idx++) {             
+    //遍历两跳邻居表two_hop_neighbortable
     for (two_hop_neighbor = two_hop_neighbortable[idx].next; two_hop_neighbor != &two_hop_neighbortable[idx];
          two_hop_neighbor = two_hop_neighbor->next) {
 
@@ -105,22 +105,22 @@ olsr_find_2_hop_neighbors_with_1_link(int willingness)
 
       if ((dup_neighbor != NULL) && (dup_neighbor->status != NOT_SYM)) {
 
-        //OLSR_PRINTF(1, "(1)Skipping 2h neighbor %s - already 1hop\n", olsr_ip_to_string(&buf, &two_hop_neighbor->neighbor_2_addr));
+        OLSR_PRINTF(1, "(1)Skipping 2h neighbor %s - already 1hop\n", olsr_ip_to_string(&buf, &two_hop_neighbor->neighbor_2_addr));
 
         continue;
       }
 
-      if (two_hop_neighbor->neighbor_2_pointer == 1) {
+      if (two_hop_neighbor->neighbor_2_pointer == 1) {        //寻找在邻居表中已经存在的邻居地址neighbor_2_addr
         if ((two_hop_neighbor->neighbor_2_nblist.next->neighbor->willingness == willingness)
             && (two_hop_neighbor->neighbor_2_nblist.next->neighbor->status == SYM)) {
           two_hop_list_tmp = olsr_malloc(sizeof(struct neighbor_2_list_entry), "MPR two hop list");
-
-          //OLSR_PRINTF(1, "ONE LINK ADDING %s\n", olsr_ip_to_string(&buf, &two_hop_neighbor->neighbor_2_addr));
+          //如果存在，且该邻居节点与本节点不是非对称的节点忽略
+          OLSR_PRINTF(1, "ONE LINK ADDING %s\n", olsr_ip_to_string(&buf, &two_hop_neighbor->neighbor_2_addr));  
 
           /* Only queue one way here */
-          two_hop_list_tmp->neighbor_2 = two_hop_neighbor;
+          two_hop_list_tmp->neighbor_2 = two_hop_neighbor;  //如果不存在且该两跳邻居节点只有一个邻居节点，将两跳邻居节点添加到两跳邻居节点链表中
 
-          two_hop_list_tmp->next = two_hop_list;
+          two_hop_list_tmp->next = two_hop_list;       //two_hop_list为两跳邻居节点链表
 
           two_hop_list = two_hop_list_tmp;
         }
@@ -137,7 +137,7 @@ olsr_find_2_hop_neighbors_with_1_link(int willingness)
  *This function processes the chosen MPRs and updates the counters
  *used in calculations
  */
-static int
+static int    //用来处理已经选你定的MPR节点，对mpr计时器的更新
 olsr_chosen_mpr(struct neighbor_entry *one_hop_neighbor, uint16_t * two_hop_covered_count)
 {
   struct neighbor_list_entry *the_one_hop_list;
@@ -154,10 +154,10 @@ olsr_chosen_mpr(struct neighbor_entry *one_hop_neighbor, uint16_t * two_hop_cove
   one_hop_neighbor->is_mpr = true;      //NBS_MPR;
 
   for (second_hop_entries = one_hop_neighbor->neighbor_2_list.next; second_hop_entries != &one_hop_neighbor->neighbor_2_list;
-       second_hop_entries = second_hop_entries->next) {
+       second_hop_entries = second_hop_entries->next) {             //对second_hop_etries进行遍历
     dup_neighbor = olsr_lookup_neighbor_table(&second_hop_entries->neighbor_2->neighbor_2_addr);
 
-    if ((dup_neighbor != NULL) && (dup_neighbor->status == SYM)) {
+    if ((dup_neighbor != NULL) && (dup_neighbor->status == SYM)) {     //忽略已经存在的邻居节点
       //OLSR_PRINTF(7, "(2)Skipping 2h neighbor %s - already 1hop\n", olsr_ip_to_string(&buf, &second_hop_entries->neighbor_2->neighbor_2_addr));
       continue;
     }
@@ -167,19 +167,19 @@ olsr_chosen_mpr(struct neighbor_entry *one_hop_neighbor, uint16_t * two_hop_cove
     /*
        Now the neighbor is covered by this mpr
      */
-    second_hop_entries->neighbor_2->mpr_covered_count++;
-    the_one_hop_list = second_hop_entries->neighbor_2->neighbor_2_nblist.next;
+    second_hop_entries->neighbor_2->mpr_covered_count++;         //增加两跳邻居节点被覆盖的mpr的数量
+    the_one_hop_list = second_hop_entries->neighbor_2->neighbor_2_nblist.next;     //将两跳邻居节点的邻居节点赋给the_one_hop_list
 
     //OLSR_PRINTF(1, "[%s](%x) has coverage %d\n", olsr_ip_to_string(&buf, &second_hop_entries->neighbor_2->neighbor_2_addr), second_hop_entries->neighbor_2, second_hop_entries->neighbor_2->mpr_covered_count);
 
-    if (second_hop_entries->neighbor_2->mpr_covered_count >= olsr_cnf->mpr_coverage)
-      count++;
+    if (second_hop_entries->neighbor_2->mpr_covered_count >= olsr_cnf->mpr_coverage)  //如果两跳节点的mpr数量多于全局变量的mpr_coverage,将count数量加1
+      count++;                                                                        
 
     while (the_one_hop_list != &second_hop_entries->neighbor_2->neighbor_2_nblist) {
 
-      if ((the_one_hop_list->neighbor->status == SYM)) {
+      if ((the_one_hop_list->neighbor->status == SYM)) {                     
         if (second_hop_entries->neighbor_2->mpr_covered_count >= olsr_cnf->mpr_coverage) {
-          the_one_hop_list->neighbor->neighbor_2_nocov--;
+          the_one_hop_list->neighbor->neighbor_2_nocov--;          
         }
       }
       the_one_hop_list = the_one_hop_list->next;
@@ -203,7 +203,7 @@ olsr_chosen_mpr(struct neighbor_entry *one_hop_neighbor, uint16_t * two_hop_cove
  *
  *@return a pointer to the neighbor_entry struct
  */
-static struct neighbor_entry *
+static struct neighbor_entry *         //找到能够覆盖到最多两跳节点的MPR
 olsr_find_maximum_covered(int willingness)
 {
   uint16_t maximum;
@@ -218,11 +218,11 @@ olsr_find_maximum_covered(int willingness)
     printf("[%s] nocov: %d mpr: %d will: %d max: %d\n\n", olsr_ip_to_string(&buf, &a_neighbor->neighbor_main_addr),
            a_neighbor->neighbor_2_nocov, a_neighbor->is_mpr, a_neighbor->willingness, maximum);
 #endif
-
+    //如果a_neighbor不是mpr，并且覆盖两条节点数据值max小于a_neighbor邻居节点的该节点的数量
     if ((!a_neighbor->is_mpr) && (a_neighbor->willingness == willingness) && (maximum < a_neighbor->neighbor_2_nocov)) {
-
-      maximum = a_neighbor->neighbor_2_nocov;
-      mpr_candidate = a_neighbor;
+ 
+      maximum = a_neighbor->neighbor_2_nocov;        //更新maximum
+      mpr_candidate = a_neighbor;                    //将a_neighbor选为mpr候选节点
     }
   }
   OLSR_FOR_ALL_NBR_ENTRIES_END(a_neighbor);
@@ -262,7 +262,7 @@ olsr_clear_mprs(void)          //清除mpr的记录
  *
  *@return 1 if changes occured 0 if not
  */
-static int
+static int       //遍历所有节点，查看mpr状态是否发生变化
 olsr_check_mpr_changes(void)
 {
   struct neighbor_entry *a_neighbor;
@@ -276,13 +276,13 @@ olsr_check_mpr_changes(void)
       a_neighbor->was_mpr = false;
 
       if (!a_neighbor->is_mpr) {
-        retval = 1;
+        retval = 1;                        //曾经是mpr，现在不是mpr，则发生改变
       }
     }
   }
   OLSR_FOR_ALL_NBR_ENTRIES_END(a_neighbor);
 
-  return retval;
+  return retval;        //变化返回1，没变返回0
 }
 
 /**
