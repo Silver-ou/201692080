@@ -234,7 +234,7 @@ olsr_find_maximum_covered(int willingness)
  *Remove all MPR registrations
  */
 static void
-olsr_clear_mprs(void)
+olsr_clear_mprs(void)          //清除mpr的记录
 {
   struct neighbor_entry *a_neighbor;
   struct neighbor_2_list_entry *two_hop_list;
@@ -242,15 +242,15 @@ olsr_clear_mprs(void)
   OLSR_FOR_ALL_NBR_ENTRIES(a_neighbor) {
 
     /* Clear MPR selection. */
-    if (a_neighbor->is_mpr) {
-      a_neighbor->was_mpr = true;
-      a_neighbor->is_mpr = false;
+    if (a_neighbor->is_mpr) {  //如果是mpr节点
+      a_neighbor->was_mpr = true;   //将was_mpr置为真
+      a_neighbor->is_mpr = false;   //将is_mpr置为假
     }
 
     /* Clear two hop neighbors coverage count/ */
     for (two_hop_list = a_neighbor->neighbor_2_list.next; two_hop_list != &a_neighbor->neighbor_2_list;
-         two_hop_list = two_hop_list->next) {
-      two_hop_list->neighbor_2->mpr_covered_count = 0;
+         two_hop_list = two_hop_list->next) {  //遍历a_neighbor的两跳邻居节点
+      two_hop_list->neighbor_2->mpr_covered_count = 0;      //将其数量置于0
     }
 
   }
@@ -364,12 +364,12 @@ add_will_always_nodes(void)                        //添加MPR节点（即will_a
   printf("\nAdding WILL ALWAYS nodes....\n");
 #endif
 
-  OLSR_FOR_ALL_NBR_ENTRIES(a_neighbor) {
+  OLSR_FOR_ALL_NBR_ENTRIES(a_neighbor) {   //将Will_always的节点添加到mpr集中
     struct ipaddr_str buf;
-    if ((a_neighbor->status == NOT_SYM) || (a_neighbor->willingness != WILL_ALWAYS)) {
+    if ((a_neighbor->status == NOT_SYM) || (a_neighbor->willingness != WILL_ALWAYS)) { //忽略掉非对称的节点和非will_always的节点
       continue;
     }
-    olsr_chosen_mpr(a_neighbor, &count);
+    olsr_chosen_mpr(a_neighbor, &count);          //添加到mpr集，并返回数量
 
     OLSR_PRINTF(3, "Adding WILL_ALWAYS: %s\n", olsr_ip_to_string(&buf, &a_neighbor->neighbor_main_addr));
 
