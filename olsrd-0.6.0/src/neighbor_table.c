@@ -133,18 +133,18 @@ olsr_delete_neighbor_2_pointer(struct neighbor_entry *neighbor, struct neighbor_
  *@return a pointer to the neighbor_2_list_entry struct
  *representing the two hop neighbor if found. NULL if not found.
  */
-struct neighbor_2_list_entry *
+struct neighbor_2_list_entry *        //查找给定的邻居节点
 olsr_lookup_my_neighbors(const struct neighbor_entry *neighbor, const union olsr_ip_addr *neighbor_main_address)
 {
-  struct neighbor_2_list_entry *entry;
+  struct neighbor_2_list_entry *entry;        //用来记录找到的两跳邻居节点信息
 
   for (entry = neighbor->neighbor_2_list.next; entry != &neighbor->neighbor_2_list; entry = entry->next) {
-
-    if (ipequal(&entry->neighbor_2->neighbor_2_addr, neighbor_main_address))
-      return entry;
+//遍历邻居节点的两跳邻居节点信息表
+    if (ipequal(&entry->neighbor_2->neighbor_2_addr, neighbor_main_address))  //存在目标邻居节点，根据IP地址来进行判断
+      return entry;          //返回该两跳邻居节点
 
   }
-  return NULL;
+  return NULL;            //未找到，返回空指针
 }
 
 /**
@@ -212,7 +212,7 @@ olsr_delete_neighbor_table(const union olsr_ip_addr *neighbor_addr)
  *
  *@return 0 if neighbor already exists 1 if inserted
  */
-struct neighbor_entry *
+struct neighbor_entry *        //在邻居节点信息表中插入邻居节点的信息
 olsr_insert_neighbor_table(const union olsr_ip_addr *main_addr)
 {
   uint32_t hash;
@@ -221,7 +221,7 @@ olsr_insert_neighbor_table(const union olsr_ip_addr *main_addr)
   hash = olsr_ip_hashing(main_addr);
 
   /* Check if entry exists */
-
+//检查邻居节点信息表中是否存在
   for (new_neigh = neighbortable[hash].next; new_neigh != &neighbortable[hash]; new_neigh = new_neigh->next) {
     if (ipequal(&new_neigh->neighbor_main_addr, main_addr))
       return new_neigh;
@@ -231,10 +231,10 @@ olsr_insert_neighbor_table(const union olsr_ip_addr *main_addr)
 
   new_neigh = olsr_malloc(sizeof(struct neighbor_entry), "New neighbor entry");
 
-  /* Set address, willingness and status */
-  new_neigh->neighbor_main_addr = *main_addr;
-  new_neigh->willingness = WILL_NEVER;
-  new_neigh->status = NOT_SYM;
+  /* Set address, willingness and status */    //设置邻居节点的状态
+  new_neigh->neighbor_main_addr = *main_addr;   //地址
+  new_neigh->willingness = WILL_NEVER;         //意愿
+  new_neigh->status = NOT_SYM;                  //状态
 
   new_neigh->neighbor_2_list.next = &new_neigh->neighbor_2_list;
   new_neigh->neighbor_2_list.prev = &new_neigh->neighbor_2_list;
@@ -297,31 +297,31 @@ olsr_lookup_neighbor_table_alias(const union olsr_ip_addr *dst)
 }
 
 int
-update_neighbor_status(struct neighbor_entry *entry, int lnk)
+update_neighbor_status(struct neighbor_entry *entry, int lnk)          //更新邻居信息表中的状态  lnk为状态
 {
   /*
    * Update neighbor entry
    */
 
-  if (lnk == SYM_LINK) {
+  if (lnk == SYM_LINK) {         //如果将原邻居节点的连接状态设置为SYM_LINK
     /* N_status is set to SYM */
-    if (entry->status == NOT_SYM) {
+    if (entry->status == NOT_SYM) {     //如果原邻居节点的状态是NOT_SYM
       struct neighbor_2_entry *two_hop_neighbor;
 
-      /* Delete posible 2 hop entry on this neighbor */
+      /* Delete posible 2 hop entry on this neighbor */     //删除这个邻居节点的两跳邻居节点
       if ((two_hop_neighbor = olsr_lookup_two_hop_neighbor_table(&entry->neighbor_main_addr)) != NULL) {
         olsr_delete_two_hop_neighbor_table(two_hop_neighbor);
       }
 
-      changes_neighborhood = true;
+      changes_neighborhood = true;     //更新路由信息，重新进行MPR选举
       changes_topology = true;
       if (olsr_cnf->tc_redundancy > 1)
         signal_link_changes(true);
     }
     entry->status = SYM;
-  } else {
+  } else {                                       //否则
     if (entry->status == SYM) {
-      changes_neighborhood = true;
+      changes_neighborhood = true;           //进行路由更新和MPR的选举
       changes_topology = true;
       if (olsr_cnf->tc_redundancy > 1)
         signal_link_changes(true);
