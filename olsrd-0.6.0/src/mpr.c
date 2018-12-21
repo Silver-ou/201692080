@@ -354,8 +354,8 @@ olsr_calculate_two_hop_neighbors(void)
 /**
  * Adds all nodes with willingness set to WILL_ALWAYS
  */
-static uint16_t
-add_will_always_nodes(void)
+static uint16_t     
+add_will_always_nodes(void)                        //添加MPR节点（即will_always节点）
 {
   struct neighbor_entry *a_neighbor;
   uint16_t count = 0;
