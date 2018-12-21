@@ -73,7 +73,7 @@ struct link_entry {
   float L_link_quality;                       //记录链路质量
   int L_link_pending;
   uint32_t L_LOST_LINK_time;
-  struct timer_entry *link_hello_timer; /* When we should receive a new HELLO */ //何时收到一个hello消息
+  struct timer_entry *link_hello_timer; /* When we should receive a new HELLO */ //何时收到一个hello消息   指针
   olsr_reltime last_htime;            
   bool olsr_seqno_valid;
   uint16_t olsr_seqno;
