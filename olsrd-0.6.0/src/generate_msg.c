@@ -64,7 +64,7 @@ static char pulsedata[] = { '\\', '|', '/', '-' };
 static uint8_t pulse_state = 0;
 
 void
-generate_hello(void *p)     //用于产生一个消息
+generate_hello(void *p)     //用于产生一个hello消息
 {
   struct hello_message hellopacket;
   struct interface *ifn = (struct interface *)p;
@@ -98,8 +98,8 @@ generate_mid(void *p)
 {
   struct interface *ifn = (struct interface *)p;
 
-  if (queue_mid(ifn) && TIMED_OUT(ifn->fwdtimer)) {
-    set_buffer_timer(ifn);
+  if (queue_mid(ifn) && TIMED_OUT(ifn->fwdtimer)) {        //将生成的mid消息放入到队列中，接收消息的节点依次读取队列中的mid消息
+    set_buffer_timer(ifn);                                  //判断消息是否过期
   }
 
 }
