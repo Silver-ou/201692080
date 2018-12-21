@@ -38,7 +38,7 @@
  * the copyright holders.
  *
  */
-
+//消息数据包的结构定义
 #include "ipcalc.h"
 #include "defs.h"
 #include "link_set.h"
