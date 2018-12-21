@@ -402,11 +402,11 @@ olsr_input_hna(union olsr_message *m, struct interface *in_if __attribute__ ((un
   }
   curr = (const uint8_t *)m;
 
-  /* olsr_msgtype */
-  pkt_get_u8(&curr, &olsr_msgtype);
-  if (olsr_msgtype != HNA_MESSAGE) {
-    OLSR_PRINTF(1, "not a HNA message!\n");
-    return false;
+  /* olsr_msgtype */                         //检查是否符合olsr的规范
+  pkt_get_u8(&curr, &olsr_msgtype);             //规范，继续发送
+  if (olsr_msgtype != HNA_MESSAGE) {             //不规范
+    OLSR_PRINTF(1, "not a HNA message!\n");    
+    return false;                               //返回false
   }
   /* Get vtime */
   pkt_get_reltime(&curr, &vtime);
