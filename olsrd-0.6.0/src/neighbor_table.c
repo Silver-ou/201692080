@@ -38,7 +38,7 @@
  * the copyright holders.
  *
  */
-
+//对一跳邻居表的处理
 #include "ipcalc.h"
 #include "defs.h"
 #include "two_hop_neighbor_table.h"
