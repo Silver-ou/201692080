@@ -38,7 +38,7 @@
  * the copyright holders.
  *
  */
-
+//关于 MPR 的一些操作
 #include "ipcalc.h"
 #include "defs.h"
 #include "mpr.h"
