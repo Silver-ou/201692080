@@ -41,7 +41,7 @@
 
 /*
  * Link sensing database for the OLSR routing daemon
- */
+ *///确定邻居表信息
 #include <assert.h>
 
 #include "defs.h"
