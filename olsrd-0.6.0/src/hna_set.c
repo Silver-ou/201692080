@@ -38,6 +38,19 @@
  * the copyright holders.
  *
  */
+/*
+一般情况下， HNA 消息生成的包为 OLSR 标准包，所以发送 HNA 运用的是 OLSR 协议的洪泛发包方式。
+下图所示为 HNA 消息的发送函数，从函数中可以看 到， HNA 消息发送时在消息中记录了 init 过程中的 
+vtime ， msgtype ， msgsize 等 数据，而hop_count则用于接收方进行判断消息跳数，接收方借此来判断如何处
+理这条 HNA 消息。
+
+
+函数中的一些判断是在发消息之前确保该节点所发的节点为标准的 HNA 消
+息包，确保该消息符合 OLSR 协议的规范。
+
+检测该 HNA 消息包是否符合 OLSR 消息包的规范，如规范则可
+继续发送，如不符合规范，则返回 false ，不发送包。
+*/
 
 #include "ipcalc.h"
 #include "defs.h"
