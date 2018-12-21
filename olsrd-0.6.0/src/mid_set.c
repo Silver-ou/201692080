@@ -559,7 +559,7 @@ olsr_print_mid_set(void)
  *@return 1 on success
  */
 
-bool
+bool        //初始化mid消息
 olsr_input_mid(union olsr_message *m, struct interface *in_if __attribute__ ((unused)), union olsr_ip_addr *from_addr)
 {
   struct ipaddr_str buf;
@@ -568,8 +568,8 @@ olsr_input_mid(union olsr_message *m, struct interface *in_if __attribute__ ((un
 
   mid_chgestruct(&message, m);
 
-  if (!olsr_validate_address(&message.mid_origaddr)) {
-    olsr_free_mid_packet(&message);
+  if (!olsr_validate_address(&message.mid_origaddr)) { //该地址用来存储olsr中所有多接口参与会话的节点，根据表判断对哪些节点发送本数据包
+    olsr_free_mid_packet(&message);           //释放mid_packet的空间
     return false;
   }
 #ifdef DEBUG
