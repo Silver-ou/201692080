@@ -42,7 +42,7 @@
 /**
  * All these functions are global
  */
-
+//实现一些全局函数，比如网络拓扑结构的 计算、路由表的计算与更新和错误处理函数等
 #include "defs.h"
 #include "olsr.h"
 #include "link_set.h"
