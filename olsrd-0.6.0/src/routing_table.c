@@ -165,18 +165,18 @@ avl_comp_ipv6_prefix(const void *prefix1, const void *prefix2)
  * Initialize the routingtree and kernel change queues.
  */
 void
-olsr_init_routing_table(void)
+olsr_init_routing_table(void)      //初始化路由表
 {
   OLSR_PRINTF(5, "RIB: init routing tree\n");
 
   /* the routing tree */
-  avl_init(&routingtree, avl_comp_prefix_default);
-  routingtree_version = 0;
+  avl_init(&routingtree, avl_comp_prefix_default);  //初始化一个avl树
+  routingtree_version = 0;                       //维护版本号
 
   /*
    * Get some cookies for memory stats and memory recycling.
    */
-  rt_mem_cookie = olsr_alloc_cookie("rt_entry", OLSR_COOKIE_TYPE_MEMORY);
+  rt_mem_cookie = olsr_alloc_cookie("rt_entry", OLSR_COOKIE_TYPE_MEMORY);  //为re_entry和rt_path分配内存，创建相应的cookie
   olsr_cookie_set_memory_size(rt_mem_cookie, sizeof(struct rt_entry));
 
   rtp_mem_cookie = olsr_alloc_cookie("rt_path", OLSR_COOKIE_TYPE_MEMORY);
@@ -191,29 +191,29 @@ olsr_init_routing_table(void)
  * @return a pointer to a rt_entry struct
  * representing the route entry.
  */
-struct rt_entry *
+struct rt_entry *                 //从avl树中找到一个地址的路由表条目，根据参数地址
 olsr_lookup_routing_table(const union olsr_ip_addr *dst)
 {
-  struct avl_node *rt_tree_node;
+  struct avl_node *rt_tree_node;         //配置要查找的变量
   struct olsr_ip_prefix prefix;
 
   prefix.prefix = *dst;
   prefix.prefix_len = olsr_cnf->maxplen;
 
-  rt_tree_node = avl_find(&routingtree, &prefix);
+  rt_tree_node = avl_find(&routingtree, &prefix);    //从在routingtree里找到该地址的位置并返回该节点
 
-  return rt_tree_node ? rt_tree2rt(rt_tree_node) : NULL;
+  return rt_tree_node ? rt_tree2rt(rt_tree_node) : NULL;    //节点不空调用tr_tree2rt函数，转成rt_entry类型，否则返回空
 }
 
 /**
  * Update gateway/interface/etx/hopcount and the version for a route path.
- */
-void
+ */ 
+void        //周期性更新每条路径
 olsr_update_rt_path(struct rt_path *rtp, struct tc_entry *tc, struct link_entry *link)
 {
 
-  rtp->rtp_version = routingtree_version;
-
+  rtp->rtp_version = routingtree_version;       //修改routingtree_version
+  //修改各个参数
   /* gateway */
   rtp->rtp_nexthop.gateway = link->neighbor_iface_addr;
 
@@ -228,27 +228,27 @@ olsr_update_rt_path(struct rt_path *rtp, struct tc_entry *tc, struct link_entry 
 /**
  * Alloc and key a new rt_entry.
  */
-static struct rt_entry *
+static struct rt_entry *   //创建可用的路由条目，对于提供的参数ip前缀分配一个路由条目空间，做出相应的初始化，把该入口插入到avl树中
 olsr_alloc_rt_entry(struct olsr_ip_prefix *prefix)
 {
-  struct rt_entry *rt = olsr_cookie_malloc(rt_mem_cookie);
+  struct rt_entry *rt = olsr_cookie_malloc(rt_mem_cookie);    //申请内存空间
   if (!rt) {
     return NULL;
   }
 
-  memset(rt, 0, sizeof(*rt));
+  memset(rt, 0, sizeof(*rt));       //空间清零
 
   /* Mark this entry as fresh (see process_routes.c:512) */
-  rt->rt_nexthop.iif_index = -1;
+  rt->rt_nexthop.iif_index = -1;            //标识该入口为新分配入口
 
   /* set key and backpointer prior to tree insertion */
-  rt->rt_dst = *prefix;
-
-  rt->rt_tree_node.key = &rt->rt_dst;
-  avl_insert(&routingtree, &rt->rt_tree_node, AVL_DUP_NO);
+  rt->rt_dst = *prefix;                       //把该入口地址的目的地址设置成参数提供的入口地址
+  
+  rt->rt_tree_node.key = &rt->rt_dst;            //把入口的树节点插入到整个路由表中
+  avl_insert(&routingtree, &rt->rt_tree_node, AVL_DUP_NO); 
 
   /* init the originator subtree */
-  avl_init(&rt->rt_path_tree, avl_comp_default);
+  avl_init(&rt->rt_path_tree, avl_comp_default);      //初始化树
 
   return rt;
 }
@@ -289,7 +289,7 @@ olsr_alloc_rt_path(struct tc_entry *tc, struct olsr_ip_prefix *prefix, uint8_t o
  * Create a route entry for a given rt_path and
  * insert it into the global RIB tree.
  */
-void
+void                   //将给的rt_path创建一个路由入口并加入到全局的RIB树里面
 olsr_insert_rt_path(struct rt_path *rtp, struct tc_entry *tc, struct link_entry *link)
 {
   struct rt_entry *rt;
@@ -298,36 +298,36 @@ olsr_insert_rt_path(struct rt_path *rtp, struct tc_entry *tc, struct link_entry 
   /*
    * no unreachable routes please.
    */
-  if (tc->path_cost == ROUTE_COST_BROKEN) {
-    return;
+  if (tc->path_cost == ROUTE_COST_BROKEN) {     //检查参数是否符合要求，path_cost是ROUTE_COST_BROKEN
+    return;          
   }
 
   /*
    * No bogus prefix lengths.
    */
-  if (rtp->rtp_dst.prefix_len > olsr_cnf->maxplen) {
+  if (rtp->rtp_dst.prefix_len > olsr_cnf->maxplen) {      //传入的rtp的目的地址长度大于所设置的最大地址长度
     return;
   }
 
   /*
    * first check if there is a route_entry for the prefix.
    */
-  node = avl_find(&routingtree, &rtp->rtp_dst);
+  node = avl_find(&routingtree, &rtp->rtp_dst);      //检测rtp的节点是否在路由表中
 
   if (!node) {
-
+    //不存在
     /* no route entry yet */
-    rt = olsr_alloc_rt_entry(&rtp->rtp_dst);
+    rt = olsr_alloc_rt_entry(&rtp->rtp_dst);     //重新分配一个节点
 
     if (!rt) {
       return;
     }
 
   } else {
-    rt = rt_tree2rt(node);
+    rt = rt_tree2rt(node);        //在的话，把节点类型转成rt_entry型
   }
 
-  /* Now insert the rt_path to the owning rt_entry tree */
+  /* Now insert the rt_path to the owning rt_entry tree */    //添加新节点，改变相应参数
   rtp->rtp_originator = tc->addr;
 
   /* set key and backpointer prior to tree insertion */
@@ -340,24 +340,24 @@ olsr_insert_rt_path(struct rt_path *rtp, struct tc_entry *tc, struct link_entry 
   rtp->rtp_rt = rt;
 
   /* update the version field and relevant parameters */
-  olsr_update_rt_path(rtp, tc, link);
+  olsr_update_rt_path(rtp, tc, link);                   //更新路由表
 }
 
 /**
  * Unlink and free a rt_path.
  */
-void
+void           //从路由表中删除rtp树，从tc树中删除
 olsr_delete_rt_path(struct rt_path *rtp)
 {
 
-  /* remove from the originator tree */
+  /* remove from the originator tree */      //把rtp所指向的树节点从所在的树里删除并把指向的树的根置空
   if (rtp->rtp_rt) {
     avl_delete(&rtp->rtp_rt->rt_path_tree, &rtp->rtp_tree_node);
     rtp->rtp_rt = NULL;
   }
 
   /* remove from the tc prefix tree */
-  if (rtp->rtp_tc) {
+  if (rtp->rtp_tc) {        //将其从前缀树中移除，解锁相应的tc_entry
     avl_delete(&rtp->rtp_tc->prefix_tree, &rtp->rtp_prefix_tree_node);
     olsr_unlock_tc_entry(rtp->rtp_tc);
     rtp->rtp_tc = NULL;
@@ -365,10 +365,10 @@ olsr_delete_rt_path(struct rt_path *rtp)
 
   /* no current inet gw if the rt_path is removed */
   if (current_inetgw == rtp) {
-    current_inetgw = NULL;
+    current_inetgw = NULL;    //将rtp所指向的树节点从tc树中删除
   }
 
-  olsr_cookie_free(rtp_mem_cookie, rtp);
+  olsr_cookie_free(rtp_mem_cookie, rtp);     //释放cookies的资源
 }
 
 /**
@@ -432,7 +432,7 @@ olsr_get_nh(const struct rt_entry *rt)
  * returns TRUE if the first path is better
  * than the second one, FALSE otherwise.
  */
-static bool
+static bool           //比较两个路由路径
 olsr_cmp_rtp(const struct rt_path *rtp1, const struct rt_path *rtp2, const struct rt_path *inetgw)
 {
   olsr_linkcost etx1 = rtp1->rtp_metric.cost;
@@ -442,7 +442,7 @@ olsr_cmp_rtp(const struct rt_path *rtp1, const struct rt_path *rtp2, const struc
   if (inetgw == rtp2)
     etx2 *= olsr_cnf->lq_nat_thresh;
 
-  /* etx comes first */
+  /* etx comes first */        //花销小的路径优先
   if (etx1 < etx2) {
     return true;
   }
@@ -451,7 +451,7 @@ olsr_cmp_rtp(const struct rt_path *rtp1, const struct rt_path *rtp2, const struc
   }
 
   /* hopcount is next tie breaker */
-  if (rtp1->rtp_metric.hops < rtp2->rtp_metric.hops) {
+  if (rtp1->rtp_metric.hops < rtp2->rtp_metric.hops) {       //花销相同，比较跳数，跳数少更优
     return true;
   }
   if (rtp1->rtp_metric.hops > rtp2->rtp_metric.hops) {
@@ -459,7 +459,7 @@ olsr_cmp_rtp(const struct rt_path *rtp1, const struct rt_path *rtp2, const struc
   }
 
   /* originator (which is guaranteed to be unique) is final tie breaker */
-  if (memcmp(&rtp1->rtp_originator, &rtp2->rtp_originator, olsr_cnf->ipsize) < 0) {
+  if (memcmp(&rtp1->rtp_originator, &rtp2->rtp_originator, olsr_cnf->ipsize) < 0) { //最后比较源地址，地址小更优
     return true;
   }
 
@@ -482,18 +482,18 @@ olsr_cmp_rt(const struct rt_entry * rt1, const struct rt_entry * rt2)
  * run best route selection among a
  * set of identical prefixes.
  */
-void
-olsr_rt_best(struct rt_entry *rt)
+void       //运行最优路径
+olsr_rt_best(struct rt_entry *rt)     
 {
   /* grab the first entry */
-  struct avl_node *node = avl_walk_first(&rt->rt_path_tree);
+  struct avl_node *node = avl_walk_first(&rt->rt_path_tree);    //得到第一个条目
 
   assert(node != 0);            /* should not happen */
 
-  rt->rt_best = rtp_tree2rtp(node);
+  rt->rt_best = rtp_tree2rtp(node);           //把节点类型转换成rt_entry
 
   /* walk all remaining originator entries */
-  while ((node = avl_walk_next(node))) {
+  while ((node = avl_walk_next(node))) {       //遍历所有条目，找到最优路径，修改当前网关路径到最佳路径
     struct rt_path *rtp = rtp_tree2rtp(node);
 
     if (olsr_cmp_rtp(rtp, rt->rt_best, current_inetgw)) {
@@ -543,19 +543,19 @@ olsr_insert_routing_table(union olsr_ip_addr *dst, int plen, union olsr_ip_addr 
    * If the tc_entry is disconnected, i.e. has no edges it will not
    * be explored during SPF run.
    */
-  tc = olsr_locate_tc_entry(originator);
+  tc = olsr_locate_tc_entry(originator);         //根据源地址判断该tc_entry是否可连接（tc_entry作为所有路由的连接点）
 
   /*
    * first check if there is a rt_path for the prefix.
    */
-  prefix.prefix = *dst;
+  prefix.prefix = *dst;      //检查该前缀是否已经存在一条路径
   prefix.prefix_len = plen;
 
   node = avl_find(&tc->prefix_tree, &prefix);
 
-  if (!node) {
+  if (!node) {      //如果没有
 
-    /* no rt_path for this prefix yet */
+    /* no rt_path for this prefix yet */       //创建一条该前缀的源地址的
     rtp = olsr_alloc_rt_path(tc, &prefix, origin);
 
     if (!rtp) {
@@ -697,7 +697,6 @@ olsr_print_routing_table(struct avl_tree *tree)
 #endif
   tree = NULL;                  /* squelch compiler warnings */
 }
-
 /*
  * Local Variables:
  * c-basic-offset: 2
