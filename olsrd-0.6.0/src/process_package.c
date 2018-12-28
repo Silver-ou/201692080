@@ -38,7 +38,7 @@
  * the copyright holders.
  *
  */
-
+//处理hello消息包
 #include "process_package.h"
 #include "ipcalc.h"
 #include "defs.h"
