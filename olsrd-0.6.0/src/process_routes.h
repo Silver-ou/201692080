@@ -38,7 +38,7 @@
  * the copyright holders.
  *
  */
-
+//操作路由表
 #ifndef _OLSR_PROCESS_RT
 #define _OLSR_PROCESS_RT
 
