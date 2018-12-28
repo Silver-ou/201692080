@@ -38,7 +38,7 @@
  * the copyright holders.
  *
  */
-
+//实现了olsr路由协议中重要的的函数
 #ifndef _OLSR_FUNCTIONS
 #define _OLSR_FUNCTIONS
 
