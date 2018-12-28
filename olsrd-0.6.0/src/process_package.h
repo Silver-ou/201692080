@@ -38,7 +38,7 @@
  * the copyright holders.
  *
  */
-
+//对hello消息包进行处理
 #ifndef _OLSR_PROCESS_PACKAGE
 #define _OLSR_PROCESS_PACKAGE
 
