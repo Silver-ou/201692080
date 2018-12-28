@@ -38,7 +38,7 @@
  * the copyright holders.
  *
  */
-
+//对mpr集进行操作
 #include "ipcalc.h"
 #include "defs.h"
 #include "mpr_selector_set.h"
