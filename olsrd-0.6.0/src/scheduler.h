@@ -39,7 +39,7 @@
  *
  */
 
-
+//对定时器处理
 #ifndef _OLSR_SCHEDULER
 #define _OLSR_SCHEDULER
 
