@@ -42,7 +42,7 @@
  * the copyright holders.
  *
  */
-
+//函数的具体实现，对路由表进行增删改等操作
 #include "ipcalc.h"
 #include "defs.h"
 #include "olsr.h"
