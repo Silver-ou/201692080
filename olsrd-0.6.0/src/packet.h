@@ -81,8 +81,8 @@ struct tc_message {                   //tc消息数据包的格式
   uint16_t packet_seq_number;             //包的序列号
   uint8_t hop_count;                    //跳数
   uint8_t ttl;                          //生命周期
-  uint16_t ansn;                        //ansn：advertised neighbor sequence number 公布邻居节点序列号
-  struct tc_mpr_addr *multipoint_relay_selector_address;
+  uint16_t ansn;                        //邻居节点序列号
+  struct tc_mpr_addr *multipoint_relay_selector_address;公布
 };
 
 /*
